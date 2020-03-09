@@ -7,5 +7,8 @@ Consists of an Arduino and Relay Board mounted within switchbox. Relay Board + m
 - Python GUI allows for remote operation of the solenoid switches
 - Automated safety precautions
 
-![Switchbox](https://github.com/nchennoju/ArduinoUAV/blob/master/uav.jpg)
-![Switchbox](https://github.com/nchennoju/ArduinoUAV/blob/master/uav.jpg)
+Python GUI
+![Switchbox](https://github.com/nchennoju/SDR-Switch-Box/blob/master/image.png)
+
+Switch Box
+![Switchbox](https://github.com/nchennoju/SDR-Switch-Box/blob/master/IMG-2598.jpg)
