@@ -7,6 +7,8 @@ Consists of an Arduino and Relay Board mounted within switchbox. Relay Board + m
 - Python GUI allows for remote operation of the solenoid switches
 - Automated safety precautions
 
+Check out my other projects at https://www.public.asu.edu/~nchennoj/projects.html
+
 Python GUI
 ![Switchbox](https://github.com/nchennoju/SDR-Switch-Box/blob/master/image.png)
 
