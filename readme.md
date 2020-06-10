@@ -24,5 +24,5 @@ import serial.tools.list_ports
 
 
 Install the following modules: (type in command)
-pip install pyserial
-pip install matplotlib
+* pip install pyserial
+* pip install matplotlib
