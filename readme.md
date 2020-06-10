@@ -3,7 +3,7 @@ This GUI program is capable of controlling the SDR Liquid Engine Switchbox to:
 1) Automate Liquid Engine Startup
 2) Display and Log Datalogger values
 
-# GUI Layout
+## GUI Layout
 ![Switchbox](https://github.com/nchennoju/SDR-Switch-Box/blob/master/IMG-2598.jpg)
 
 
