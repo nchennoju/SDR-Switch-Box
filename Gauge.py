@@ -13,8 +13,9 @@ class Gauge:
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.c = Canvas(root, width=190, height=250, bg=background, highlightthickness=0)
-        self.xy = [(100.0, 90.0), (100.0, 40.0)]
-        self.line = self.c.create_line(self.xy, width=5, fill='white')
+
+        #self.xy = [(100.0, 90.0), (100.0, 40.0)]
+        #self.line = self.c.create_line(self.xy, width=5, fill='white')
         size = 180
         self.dark = self.c.create_arc(30, 20, size - 10, size - 10, style="arc", width=20, start=self.startAngle, extent=(self.endAngle - self.startAngle)/2.0,
                             outline="#8a1919", tags=('arc1', 'arc2'))
@@ -22,7 +23,8 @@ class Gauge:
         self.light = self.c.create_arc(30, 20, size - 10, size - 10, width=20, style="arc", start=90, extent=(self.endAngle - self.startAngle)/2.0,
                              outline="#ff0000", tags=('arc1', 'arc2'))
         #00ff65
-        self.readout = self.c.create_text(100, 130, font=("Arial", int(size / 14), 'bold'), fill="white", text='')
+        self.readout = self.c.create_text(100, 85, font=("Arial", int(size / 10), 'bold'), fill="white", text='')
+        self.label = self.c.create_text(100, 130, font=("Arial", int(size / 14), 'bold'), fill="white", text='')
 
     def setAngle(self, theta): #-30 to 210 value
         #Gauge bounds set
@@ -31,20 +33,22 @@ class Gauge:
         if(theta < self.startAngle):
             theta = self.startAngle
 
-        radius = math.sqrt(pow(self.xy[1][0] - self.xy[0][0], 2) + pow(self.xy[1][1] - self.xy[0][1], 2))
-        y = radius * math.sin(theta * math.pi / 180.0)
-        x = radius * math.cos(theta * math.pi / 180.0)
-        coor = [(100.0, 110.0)]
-        coor.append([self.xy[0][0] + x, self.xy[0][1] - y])
-        self.c.coords(self.line, coor[0][0], coor[0][1], coor[1][0], coor[1][1])
+        # NEEDLE ITEMS
+        #radius = math.sqrt(pow(self.xy[1][0] - self.xy[0][0], 2) + pow(self.xy[1][1] - self.xy[0][1], 2))
+        #y = radius * math.sin(theta * math.pi / 180.0)
+        #x = radius * math.cos(theta * math.pi / 180.0)
+        #coor = [(100.0, 110.0)]
+        #coor.append([self.xy[0][0] + x, self.xy[0][1] - y])
+        #self.c.coords(self.line, coor[0][0], coor[0][1], coor[1][0], coor[1][1])
         self.c.itemconfig(self.dark, start=self.startAngle, extent=theta - self.startAngle)
         self.c.itemconfig(self.light, start=theta, extent=self.endAngle - theta)
 
     def getWidget(self):
         return self.c
 
-    def setText(self, str):
+    def setText(self, str, label):
         self.c.itemconfig(self.readout, text=str)
+        self.c.itemconfig(self.label, text=label)
 
 #TEST CODE
 '''win = tk.Tk()
