@@ -20,19 +20,117 @@ __author__      = "Nitish Chennoju"
 __credits__ = ["Colton Acosta"]
 
 #GUI Imports
-import time
-import threading
-import asyncio
-import tkinter as tk
 import serial
 import serial.tools.list_ports
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib import style
 
 #Custom Classes
 import Gauge
 import RelaySwitch
+import time
+from random import randint
+import tkinter as tk
+
+import Nozzle
+import Tank
+import Valves
+import Pipes
+import Header
+
+#P&ID WINDOW
+gridLen = 100
+width = gridLen*7
+height = gridLen*10
+
+win = tk.Tk()
+win.title("ELEMENT TEST")
+win.geometry(str(width) + "x" + str(height))
+win.configure(bg='black')
+
+win_w = width
+win_h = height
+
+#HEADER
+header = Header.Header(win, 'black', 'SDR P&ID GUI', width, gridLen, 24)
+header.getWidget().place(x=gridLen*0, y=gridLen*0)
+
+#All TANKS
+he = Tank.Tank(win, 'black', 'He', '#1d2396', gridLen, gridLen)
+gn2 = Tank.Tank(win, 'black', 'GN2', '#1d2396', gridLen, gridLen)
+lox = Tank.Tank(win, 'black', 'LOx', '#1d2396', gridLen, gridLen)
+k = Tank.Tank(win, 'black', 'K', '#1d2396', gridLen, gridLen)
+he.getWidget().place(x=gridLen*1, y=gridLen*1)
+gn2.getWidget().place(x=gridLen*3, y=gridLen*1)
+lox.getWidget().place(x=gridLen*1, y=gridLen*4)
+k.getWidget().place(x=gridLen*5, y=gridLen*4)
+
+#CONSTANT
+fluidColor = '#41d94d'
+
+#All SOLENOID VALVES
+one = Valves.Solenoid(win, 'black', 1, gridLen, gridLen, True, False, True, False, fluidColor, True, False, True, False)
+seven = Valves.Solenoid(win, 'black', 7, gridLen, gridLen, False, False, True, True, fluidColor, False, False, True, True)
+four = Valves.Solenoid(win, 'black', 4, gridLen, gridLen, False, True, False, True, fluidColor, False, True, False, True)
+five = Valves.Solenoid(win, 'black', 5, gridLen, gridLen, False, True, False, True, fluidColor, False, True, False, True)
+loxFD = Valves.Solenoid(win, 'black', 5, gridLen, gridLen, False, True, False, True, fluidColor, False, True, False, True)
+one.getWidget().place(x=gridLen*1, y=gridLen*2)
+seven.getWidget().place(x=gridLen*5, y=gridLen*2)
+four.getWidget().place(x=gridLen*2, y=gridLen*6)
+five.getWidget().place(x=gridLen*4, y=gridLen*6)
+loxFD.getWidget().place(x=gridLen*0, y=gridLen*5)
+
+#All STEPPER VALVES
+s1 = Valves.Stepper(win, 'black', gridLen, gridLen, True, True, True, False, fluidColor, True, True, True, False,)
+s2 = Valves.Stepper(win, 'black', gridLen, gridLen, True, False, True, True, fluidColor, True, False, True, True)
+s1.getWidget().place(x=gridLen*1, y=gridLen*6)
+s2.getWidget().place(x=gridLen*5, y=gridLen*6)
+
+#All ORIFICEs
+o1 = Valves.Orifice(win, 'black', gridLen, gridLen, False, True, False, True, '#41d94d', False, True, False, True)
+o2 = Valves.Orifice(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', True, False, True, False)
+o1.getWidget().place(x=gridLen*2, y=gridLen*7)
+o2.getWidget().place(x=gridLen*5, y=gridLen*7)
+
+#All Pressure Sensors
+p1 = Valves.PressureSensor(win, 'black', gridLen, gridLen, False, True, False, False, '#41d94d', False, False, False, False)
+p2 = Valves.PressureSensor(win, 'black', gridLen, gridLen, False, False, False, True, '#41d94d', False, False, False, False)
+p3 = Valves.PressureSensor(win, 'black', gridLen, gridLen, False, False, True, True, '#41d94d', False, False, False, False)
+p1.getWidget().place(x=gridLen*0, y=gridLen*3)
+p2.getWidget().place(x=gridLen*6, y=gridLen*3)
+p3.getWidget().place(x=gridLen*4, y=gridLen*7)
+
+#All PIPES
+p1 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, False, '#41d94d', False)
+p2 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, False, True, '#41d94d', False)
+p3 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, True, '#41d94d', False)
+p4 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
+p5 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, False, '#41d94d', False)
+p6 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
+p7 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, True, '#41d94d', False)
+p8 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
+p9 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, False, '#41d94d', False)
+p10 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, False, True, '#41d94d', False)
+p11 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, False, False, '#41d94d', False)
+p12 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, True, True, '#41d94d', False)
+p13 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, False, False, '#41d94d', False)
+p14 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, False, True, '#41d94d', False)
+p1.getWidget().place(x=gridLen*3, y=gridLen*2)
+p2.getWidget().place(x=gridLen*4, y=gridLen*2)
+p3.getWidget().place(x=gridLen*1, y=gridLen*3)
+p4.getWidget().place(x=gridLen*3, y=gridLen*3)
+p5.getWidget().place(x=gridLen*5, y=gridLen*3)
+p6.getWidget().place(x=gridLen*3, y=gridLen*4)
+p7.getWidget().place(x=gridLen*1, y=gridLen*5)
+p8.getWidget().place(x=gridLen*3, y=gridLen*5)
+p9.getWidget().place(x=gridLen*5, y=gridLen*5)
+p10.getWidget().place(x=gridLen*3, y=gridLen*6)
+p11.getWidget().place(x=gridLen*1, y=gridLen*7)
+p12.getWidget().place(x=gridLen*3, y=gridLen*7)
+p13.getWidget().place(x=gridLen*4, y=gridLen*8)
+p14.getWidget().place(x=gridLen*5, y=gridLen*8)
+
+#NOZZLE
+n = Nozzle.Nozzle(win, 'black', gridLen, gridLen*1.5)
+n.getWidget().place(x=gridLen*3, y=gridLen*8)
 
 
 
@@ -56,26 +154,17 @@ def main():
 
     def startup():
         print("Startup")
-        # can either be controlled via python program triggers event in arduino
-        # Advantage of python: can see on GUI which relays are being triggered
-        for i in range(10):
-            switch1.on_button.invoke()
-            time.sleep(0.5)
-            switch1.off_button.invoke()
-            switch2.on_button.invoke()
-            time.sleep(0.5)
-            switch2.off_button.invoke()
 
     def allOff():
         arduinoSwitchbox.write(b'8')
-        switch1.off_button.select()
-        switch2.off_button.select()
-        switch3.off_button.select()
-        switch4.off_button.select()
-        switch1.lR.config(bg="red")
-        switch2.lR.config(bg="red")
-        switch3.lR.config(bg="red")
-        switch4.lR.config(bg="red")
+        switch1.setLedState(False)
+        switch2.setLedState(False)
+        switch3.setLedState(False)
+        switch4.setLedState(False)
+        switch5.setLedState(False)
+        switch6.setLedState(False)
+        switch7.setLedState(False)
+        switch8.setLedState(False)
         print("All OFF COMPLETE")
 
     #MAIN CODE START
@@ -94,48 +183,64 @@ def main():
     root.configure(background = "black")
     root.geometry(dim)
 
-    l1 = tk.Label(root, text="SDR - Liquid Engine Dashboard", bg="black", fg="white", font="Arial 30 bold").pack(pady=60)
+    tk.Label(root, text="SDR - Liquid Engine Dashboard", bg="black", fg="white", font="Arial 30").pack(pady=40)
 
     test = findArduino(getPorts())
     if(test == "None"):
         arduinoSwitchbox = serial.Serial()
-        l2 = tk.Label(root, text="DISCONNECTED: " + test, bg="black", fg="red", font="Arial 14 bold").pack()
+        tk.Label(root, text="DISCONNECTED: " + test, bg="black", fg="red", font="Arial 14 bold").pack()
     else:
         arduinoSwitchbox = serial.Serial(test.split()[0], 115200)
-        l2 = tk.Label(root, text="CONNECTED: " + test, bg="black", fg="green2", font="Arial 14 bold").pack()
+        tk.Label(root, text="CONNECTED: " + test, bg="black", fg="green2", font="Arial 14 bold").pack()
     print(test)
 
     #RELAY Switches created
-    switch1 = RelaySwitch.Switch(root, "Relay 1: ", 0, arduinoSwitchbox)
-    switch2 = RelaySwitch.Switch(root, "Relay 2: ", 1, arduinoSwitchbox)
-    switch3 = RelaySwitch.Switch(root, "Relay 3: ", 2, arduinoSwitchbox)
-    switch4 = RelaySwitch.Switch(root, "Relay 4: ", 3, arduinoSwitchbox)
+    a = tk.Frame(root, bg='black')
+    b = tk.Frame(root, bg='black')
+    c = tk.Frame(root, bg='black')
+    d = tk.Frame(root, bg='black')
+    switch1 = RelaySwitch.Buttons(a, 0, arduinoSwitchbox, "Relay 1", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 1: ", 0, arduinoSwitchbox)
+    switch2 = RelaySwitch.Buttons(b, 1, arduinoSwitchbox, "Relay 2", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 2: ", 1, arduinoSwitchbox)
+    switch3 = RelaySwitch.Buttons(c, 2, arduinoSwitchbox, "Relay 3", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 3: ", 2, arduinoSwitchbox)
+    switch4 = RelaySwitch.Buttons(d, 3, arduinoSwitchbox, "Relay 4", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 4: ", 3, arduinoSwitchbox)
+    switch5 = RelaySwitch.Buttons(a, 0, arduinoSwitchbox, "Relay 1", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 1: ", 0, arduinoSwitchbox)
+    switch6 = RelaySwitch.Buttons(b, 1, arduinoSwitchbox, "Relay 2", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 2: ", 1, arduinoSwitchbox)
+    switch7 = RelaySwitch.Buttons(c, 2, arduinoSwitchbox, "Relay 3", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 3: ", 2, arduinoSwitchbox)
+    switch8 = RelaySwitch.Buttons(d, 3, arduinoSwitchbox, "Relay 4", 60,
+                                  60)  # RelaySwitch.Switch(root, "Relay 4: ", 3, arduinoSwitchbox)
+    a.pack()
+    b.pack()
+    c.pack()
+    d.pack()
 
-    f = tk.Frame(root)
     g = tk.Frame(root)
     h = tk.Frame(root)
-    s = tk.Button(f, text="STARTUP", padx=40, pady=10, font="Verdana 14 bold", bg="yellow", command=startup)
-    off = tk.Button(f, text="All OFF", padx=30, pady=10, font="Verdana 14 bold", bg="RED", command=allOff)
+    s = tk.Button(root, text="STARTUP", padx=40, pady=10, font="Verdana 14", bg="yellow", command=startup, activebackground="yellow")
+    off = tk.Button(root, text="All OFF", padx=30, pady=10, font="Verdana 14", bg="RED", command=allOff, activebackground="RED")
 
-    s.pack(side="left")
-    off.pack(side="left")
-    f.pack(pady=2*pad)
-
-
+    s.pack(pady=pad)
+    off.pack(pady=pad)
 
 
     #------------------------ DATA LOGGER -------------------------------
     g1 = Gauge.Gauge(g, 'black', -30, 210)
-    g1.setText("Nan", "AcX")
+    g1.setText("Nan", "A0")
     g1.getWidget().pack(side="left")
     g2 = Gauge.Gauge(g, 'black', -30, 210)
-    g2.setText("Nan", "AcY")
+    g2.setText("Nan", "A1")
     g2.getWidget().pack(side="left")
     g3 = Gauge.Gauge(h, 'black', -30, 210)
-    g3.setText("Nan", "AcZ")
+    g3.setText("Nan", "A2")
     g3.getWidget().pack(side="left")
     g4 = Gauge.Gauge(h, 'black', -30, 210)
-    g4.setText("Nan", "Tmp")
+    g4.setText("Nan", "A3")
     g4.getWidget().pack(side="right")
     g.pack()
     h.pack()
@@ -155,18 +260,19 @@ def main():
             file.write(strSerial[0:len(strSerial) - 2] + "\n")
             print(strSerial[0:len(strSerial) - 2])
             file.close()
-            g1.setAngle(abs(float(data[1])) * (180.0 / 10.0))
-            g1.setText(data[1], "AcX")
-            g2.setAngle(abs(float(data[2])) * (180.0 / 10.0))
-            g2.setText(data[2], "AcY")
-            g3.setAngle(abs(float(data[3])) * (180.0 / 10.0))
-            g3.setText(data[3], "AcZ")
-            g4.setAngle(abs(float(data[9])) * (180.0 / 50.0))
-            g4.setText(data[9].replace('\n', ''), "Tmp")
+            g1.setAngle(abs(float(data[1])) * (180.0 / 1023.0))
+            g1.setText(data[1], "A0")
+            g2.setAngle(abs(float(data[2])) * (180.0 / 1023.0))
+            g2.setText(data[2], "A1")
+            g3.setAngle(abs(float(data[3])) * (180.0 / 1023.0))
+            g3.setText(data[3], "A2")
+            g4.setAngle(abs(float(data[9])) * (180.0 / 1023.0))
+            g4.setText(data[4].replace('\n', ''), "A3")
 
         root.update()
 
     root.mainloop()
+    win.mainloop()
 
 
 if __name__ == "__main__":
