@@ -4,7 +4,7 @@ This GUI program is capable of controlling the SDR Liquid Engine Switchbox to:
 2) Display and Log Datalogger values
 
 ## GUI Layout
-![GUI 3.0](https://github.com/nchennoju/SDR-Switch-Box/blob/master/v3.png)
+![GUI 3.0](https://github.com/nchennoju/SDR-Switch-Box/blob/master/img/v6.jpg)
 
 
 A couple things to keep in mind:
@@ -25,4 +25,3 @@ import serial.tools.list_ports
 
 Install the following modules: (type in command)
 * pip install pyserial
-* pip install matplotlib
