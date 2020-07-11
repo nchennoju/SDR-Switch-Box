@@ -4,7 +4,7 @@ This GUI program is capable of controlling the SDR Liquid Engine Switchbox to:
 2) Display and Log Datalogger values
 
 ## GUI Layout
-![GUI 3.0](https://github.com/nchennoju/SDR-Switch-Box/blob/master/img/v6.jpg)
+![GUI 3.0](https://github.com/nchennoju/SDR-Switch-Box/blob/master/SDR_GUI/img/v8.jpg)
 
 
 A couple things to keep in mind:
