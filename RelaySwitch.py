@@ -3,6 +3,25 @@ import tkinter as tk
 
 pad = 10
 
+class StepperSlider:
+    def __init__(self, root, pinNum, arduino, text, width, height, symbol):
+        self.arduino = arduino
+
+        self.pinNum = pinNum
+
+        self.symbol = symbol
+
+        self.switch = tk.Frame(root, background='black')
+
+        var = DoubleVar()
+        self.scale = Scale(self.switch, orient=HORIZONTAL, variable=var, bg='black', fg='white', activebackground='black', activeforeground='white')
+        self.scale.pack(side='left')
+
+        self.switch.pack(side='left', padx=4*pad)
+
+    def getFrame(self):
+        return self.switch
+
 class RelayLED:
 
     def __init__(self, root, background, onB, offB, title, width, height):
@@ -28,10 +47,12 @@ class RelayLED:
         return self.c
 
 class Buttons:
-    def __init__(self, root, pinNum, arduino, text, width, height):
+    def __init__(self, root, pinNum, arduino, text, width, height, symbol):
         self.arduino = arduino
 
         self.pinNum = pinNum
+
+        self.symbol = symbol
 
         self.switch = tk.Frame(root, background = 'black')
         self.led = RelayLED(self.switch, 'black', '#41d94d', '#ed3b3b', text, width, height)
@@ -47,12 +68,14 @@ class Buttons:
     def actionOff(self):
         serialNum = (self.pinNum*2) + 0
         self.led.setState(False)
+        self.symbol.setState(False)
         self.arduino.write(str.encode(str(serialNum)))
         print(str(serialNum))
 
     def actionOn(self):
         serialNum = (self.pinNum*2) + 1
         self.led.setState(True)
+        self.symbol.setState(True)
         self.arduino.write(str.encode(str(serialNum)))
         print(str(serialNum))
 
@@ -70,6 +93,7 @@ class Switch:
 
         self.name = name
         self.pinNum = pinNum
+
 
         self.switch = tk.Frame(root)
         self.lR = tk.Label(self.switch, text=name, bg="red", fg="white", font="Arial 16 bold")

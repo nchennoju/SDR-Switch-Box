@@ -8,7 +8,7 @@ from tkinter import *
 class Tank:
 
     def __init__(self, root, background, title, fluidColor, width, height):
-        padding = 20
+        padding = 15
 
         self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
         self.width = width
@@ -18,9 +18,9 @@ class Tank:
         self.fill = self.c.create_rectangle((width/4.0) + 1, 50,width*(3/4.0)-1, height-2, fill=fluidColor)
 
         self.pressure = self.c.create_text(width / 2.0, (height / 2.0) - 1.25*padding, font=("Arial", 11, 'bold'), fill="white", text=title)
-        self.pressure = self.c.create_text(width/2.0, (height/2.0), font=("Arial", 9), fill="white", text='psi')
-        self.percentage = self.c.create_text(width/2.0, (height/2.0) + padding, font=("Arial", 9), fill="white", text='%')
-        self.temperature = self.c.create_text(width/2.0, (height/2.0) + 2*padding, font=("Arial", 9), fill="white", text='tmp')
+        self.pressure = self.c.create_text(width/2.0, (height/2.0), font=("Arial", 8), fill="white", text='psi')
+        self.percentage = self.c.create_text(width/2.0, (height/2.0) + padding, font=("Arial", 8), fill="white", text='%')
+        self.temperature = self.c.create_text(width/2.0, (height/2.0) + 2*padding, font=("Arial", 8), fill="white", text='tmp')
 
 
     def setTankLevel(self, percent):

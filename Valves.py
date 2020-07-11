@@ -190,10 +190,66 @@ class PressureSensor:
 
         self.rect = self.c.create_oval(width / 4.0, height / 4.0, width * (3 / 4.0), height * (3 / 4.0),
                                             outline='white', width=1)
-        self.p = self.c.create_text(width / 2.0, height / 2.0, font=("Arial", 10, 'bold'), fill="white",
+        self.p = self.c.create_text(width / 2.0, height / 2.0, font=("Arial", 8, 'bold'), fill="white",
                                              text="__ Pa")
         self.name = self.c.create_text(width/4.0, height/8.0, font=("Arial", 6, 'bold'), fill="white",
                                          text="Pressure\nSensor")
+
+        #DRAW PIPES
+        if(line_1):
+            xy = [(7 * width / 16.0, height / 4.0), (7 * width / 16.0, 0)]
+            self.c.create_line(xy, width=1, fill='white')
+            xy2 = [(9 * width / 16.0, height / 4.0), (9 * width / 16.0, 0)]
+            self.c.create_line(xy2, width=1, fill='white')
+        if(line_2):
+            xy = [(width * (3 / 4.0), 7 * height / 16.0), (width, 7 * height / 16.0)]
+            self.c.create_line(xy, width=1, fill='white')
+            xy2 = [(width * (3 / 4.0), 9 * height / 16.0), (width, 9 * height / 16.0)]
+            self.c.create_line(xy2, width=1, fill='white')
+        if(line_3):
+            xy = [(7 * width / 16.0, height * (3 / 4.0)), (7 * width / 16.0, height)]
+            self.c.create_line(xy, width=1, fill='white')
+            xy2 = [(9 * width / 16.0, height * (3 / 4.0)), (9 * width / 16.0, height)]
+            self.c.create_line(xy2, width=1, fill='white')
+        if(line_4):
+            xy = [(width / 4.0, 7 * height / 16.0), (0, 7 * height / 16.0)]
+            self.c.create_line(xy, width=1, fill='white')
+            xy2 = [(width / 4.0, 9 * height / 16.0), (0, 9 * height / 16.0)]
+            self.c.create_line(xy2, width=1, fill='white')
+
+        #DRAW FLOW
+        if(fill_1):
+            self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
+                                                fill=fluidColor, outline="")
+        if(fill_2):
+            self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width, (9 * height / 16.0) - 1,
+                                              fill=fluidColor, outline="")
+        if(fill_3):
+            self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1, height,
+                                              fill=fluidColor, outline="")
+        if(fill_4):
+            self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
+                                              fill=fluidColor, outline="")
+
+    def getWidget(self):
+        return self.c
+
+    def setValues(self, pressure):
+        self.c.itemconfig(self.p, text=pressure)
+
+class TempSensor:
+
+    def __init__(self, root, background, width, height, line_1, line_2, line_3, line_4, fluidColor, fill_1, fill_2, fill_3, fill_4):
+        self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
+        self.width = width
+        self.height = height
+
+        self.rect = self.c.create_oval(width / 4.0, height / 4.0, width * (3 / 4.0), height * (3 / 4.0),
+                                            outline='white', width=1)
+        self.p = self.c.create_text(width / 2.0, height / 2.0, font=("Arial", 8, 'bold'), fill="white",
+                                             text="__ °C")
+        self.name = self.c.create_text(width/4.0, height/8.0, font=("Arial", 6, 'bold'), fill="white",
+                                         text="Temp\nSensor")
 
         #DRAW PIPES
         if(line_1):
