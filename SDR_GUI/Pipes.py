@@ -12,10 +12,26 @@ class Pipe:
         self.width = width
         self.height = height
 
+        self.line1 = line_1
+        self.line2 = line_2
+        self.line3 = line_3
+        self.line4 = line_4
+
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
+
+        self.state = False
+        self.fluidColor = fluidColor
+
         # DRAW PIPES
         if(fill):
             self.f0 = self.c.create_rectangle(7 * width / 16.0, 7 * height / 16.0, 9 * width / 16.0, 9 * height / 16.0,
-                                                  fill=fluidColor)
+                                              fill=fluidColor)
+        else:
+            self.f0 = self.c.create_rectangle(7 * width / 16.0, 7 * height / 16.0, 9 * width / 16.0, 9 * height / 16.0,
+                                              fill='black')
 
         if (line_1):
             xy = [(7 * width / 16.0, 0), (7 * width / 16.0, 7 * height / 16.0)]
@@ -25,6 +41,10 @@ class Pipe:
             if(fill):
                 self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (7 * height / 16.0) + 1,
                                                   fill=fluidColor, outline="")
+            else:
+                self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1,
+                                                  (7 * height / 16.0) + 1,
+                                                  fill='black', outline = "")
         else:
             xy = [(7 * width / 16.0, 7 * height / 16.0), (9 * width / 16.0, 7 * height / 16.0)]
             self.c.create_line(xy, width=1, fill='white')
@@ -37,6 +57,10 @@ class Pipe:
                 self.f2 = self.c.create_rectangle(9 * width / 16.0, (7 * height / 16.0) + 1, width,
                                                   (9 * height / 16.0) - 1,
                                                   fill=fluidColor, outline="")
+            else:
+                self.f2 = self.c.create_rectangle(9 * width / 16.0, (7 * height / 16.0) + 1, width,
+                                                  (9 * height / 16.0) - 1,
+                                                  fill='black', outline="")
         else:
             xy = [(9 * width / 16.0, 7 * height / 16.0), (9 * width / 16.0, 9 * height / 16.0)]
             self.c.create_line(xy, width=1, fill='white')
@@ -49,6 +73,10 @@ class Pipe:
                 self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, 9 * height / 16.0, (9 * width / 16.0) - 1,
                                                   height,
                                                   fill=fluidColor, outline="")
+            else:
+                self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, 9 * height / 16.0, (9 * width / 16.0) - 1,
+                                                  height,
+                                                  fill='black', outline="")
         else:
             xy = [(7 * width / 16.0, 9 * height / 16.0), (9 * width / 16.0, 9 * height / 16.0)]
             self.c.create_line(xy, width=1, fill='white')
@@ -58,13 +86,49 @@ class Pipe:
             xy2 = [(0, 9 * height / 16.0), (7 * width / 16.0, 9 * height / 16.0)]
             self.c.create_line(xy2, width=1, fill='white')
             if(fill):
-                self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (7 * width / 16.0) + 1, (9 * height / 16.0) - 1,
+                self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (7 * width / 16.0) + 1,
+                                                  (9 * height / 16.0) - 1,
                                                   fill=fluidColor, outline="")
+            else:
+                self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (7 * width / 16.0) + 1,
+                                                  (9 * height / 16.0) - 1,
+                                                  fill='black', outline="")
         else:
             xy = [(7 * width / 16.0, 7 * height / 16.0), (7 * width / 16.0, 9 * height / 16.0)]
             self.c.create_line(xy, width=1, fill='white')
 
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
 
+    def setState(self, fluid):
+        self.state = fluid
+        if(fluid):
+            self.c.itemconfig(self.f0, fill=self.fluidColor)
+            if (self.line1):
+                self.c.itemconfig(self.f1, fill=self.fluidColor)
+            if (self.line2):
+                self.c.itemconfig(self.f2, fill=self.fluidColor)
+            if (self.line3):
+                self.c.itemconfig(self.f3, fill=self.fluidColor)
+            if (self.line4):
+                self.c.itemconfig(self.f4, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f0, fill='black')
+            if (self.line1):
+                self.c.itemconfig(self.f1, fill='black')
+            if (self.line2):
+                self.c.itemconfig(self.f2, fill='black')
+            if (self.line3):
+                self.c.itemconfig(self.f3, fill='black')
+            if (self.line4):
+                self.c.itemconfig(self.f4, fill='black')
+
+
+    def getState(self):
+        return self.state
 
     def getWidget(self):
         return self.c

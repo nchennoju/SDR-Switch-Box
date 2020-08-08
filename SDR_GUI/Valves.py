@@ -7,13 +7,27 @@ from tkinter import *
 
 class Solenoid:
 
-    def __init__(self, root, background, num, width, height, line_1, line_2, line_3, line_4, fluidColor, fill_1, fill_2, fill_3, fill_4):
+    def __init__(self, root, background, num, width, height, line_1, line_2, line_3, line_4, fluidColor):
         self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
         self.width = width
         self.height = height
 
+        self.state = False
+
+        self.fluidColor = fluidColor
+
         self.fill = self.c.create_rectangle((width/4.0), (height/4.0), (width*(3/4.0)), (height*(3/4.0)), fill='#ab1f1f')
         self.rect = self.c.create_rectangle(width/4.0, height/4.0, width*(3/4.0), height*(3/4.0), outline='white')
+
+        self.l1 = line_1
+        self.l2 = line_2
+        self.l3 = line_3
+        self.l4 = line_4
+
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
 
         #DRAW PIPES
         if(line_1):
@@ -38,29 +52,58 @@ class Solenoid:
             self.c.create_line(xy2, width=1, fill='white')
 
         #DRAW FLOW
-        if(fill_1):
-            self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
-                                                fill=fluidColor, outline="")
-        if(fill_2):
-            self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
-        if(fill_3):
-            self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1, height,
-                                              fill=fluidColor, outline="")
-        if(fill_4):
-            self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
+        self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
+                                                fill='black', outline="")
+        self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width, (9 * height / 16.0) - 1,
+                                              fill='black', outline="")
+        self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1, height,
+                                              fill='black', outline="")
+        self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
+                                              fill='black', outline="")
 
         self.c.create_text(width / 2.0, height / 2.0, font=("Arial", 10, 'bold'), fill="white", text=str(num))
 
     def getWidget(self):
         return self.c
 
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
+
+    def getState(self):
+        return self.state
+
     def setState(self, open):
         if(open):
+            self.state = True
             self.c.itemconfig(self.fill, fill='#41d94d')
         else:
+            self.state = False
             self.c.itemconfig(self.fill, fill = '#ab1f1f')
+
+    def setPipes(self, fill_1, fill_2, fill_3, fill_4):
+        if (fill_1):
+            self.c.itemconfig(self.f1, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f1, fill='black')
+        if (fill_2):
+            self.c.itemconfig(self.f2, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f2, fill='black')
+        if (fill_3):
+            self.c.itemconfig(self.f3, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f3, fill='black')
+        if (fill_4):
+            self.c.itemconfig(self.f4, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f4, fill='black')
+
+    def getPipes(self):
+        return [self.l1, self.l2, self.l3, self.l4]
+
 
 
 class Stepper:
@@ -69,6 +112,18 @@ class Stepper:
         self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
         self.width = width
         self.height = height
+
+        self.fluidColor = fluidColor
+
+        self.fill1 = False
+        self.fill2 = False
+        self.fill3 = False
+        self.fill4 = False
+
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
 
         self.fill = self.c.create_rectangle((width/4.0), (height/4.0), (width*(3/4.0)), (height*(3/4.0)), fill='#ab1f1f')
         self.fillGreen = self.c.create_rectangle((width / 4.0), (height / 4.0), (width / 4.0), (height * (3 / 4.0)), fill='#41d94d')
@@ -97,29 +152,61 @@ class Stepper:
             self.c.create_line(xy2, width=1, fill='white')
 
         # DRAW FLOW
-        if (fill_1):
-            self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
-                                              fill=fluidColor, outline="")
-        if (fill_2):
-            self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width,
+        self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
+                                              fill='black', outline="")
+        self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width,
                                               (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
-        if (fill_3):
-            self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1,
+                                              fill='black', outline="")
+        self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1,
                                               height,
-                                              fill=fluidColor, outline="")
-        if (fill_4):
-            self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
+                                              fill='black', outline="")
+        self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
+                                              fill='black', outline="")
 
         self.percentage = self.c.create_text(width / 2.0, height / 2.0, font=("Arial", 10, 'bold'), fill="white", text="_ _ %")
+        self.per = 0
+
+    def setPipes(self, fill_1, fill_2, fill_3, fill_4):
+        self.fill1 = fill_1
+        self.fill2 = fill_2
+        self.fill3 = fill_3
+        self.fill4 = fill_4
+        if (fill_1):
+            self.c.itemconfig(self.f1, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f1, fill='black')
+        if (fill_2):
+            self.c.itemconfig(self.f2, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f2, fill='black')
+        if (fill_3):
+            self.c.itemconfig(self.f3, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f3, fill='black')
+        if (fill_4):
+            self.c.itemconfig(self.f4, fill=self.fluidColor)
+        else:
+            self.c.itemconfig(self.f4, fill='black')
+
+    def getPipes(self):
+        return [self.fill1, self.fill2, self.fill3, self.fill4]
 
     def getWidget(self):
         return self.c
 
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
+
     def setPercentage(self, p):
+        self.per = p
         self.c.itemconfig(self.percentage, text=str(p)+' %')
         self.c.coords(self.fillGreen, (self.width / 4.0), (self.height / 4.0), (self.width / 4.0) + ((p/100.0)*self.width/2.0), (self.height * (3 / 4.0)))
+
+    def getPercentage(self):
+        return self.per
 
 class Orifice:
 
@@ -127,6 +214,20 @@ class Orifice:
         self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
         self.width = width
         self.height = height
+
+        self.fluidColor = fluidColor
+
+        self.state = False
+
+        self.line_1 = line_1
+        self.line_2 = line_2
+        self.line_3 = line_3
+        self.line_4 = line_4
+
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
 
         self.rect = self.c.create_rectangle(width/4.0, height/4.0, width*(3/4.0), height*(3/4.0), outline='white')
         self.c.create_line((width / 4.0, height / 2.0), (3 * width / 4.0, height / 2.0), width=1, fill='white')
@@ -160,18 +261,43 @@ class Orifice:
             self.c.create_line(xy2, width=1, fill='white')
 
         #DRAW FLOW
-        if(fill_1):
-            self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
-                                                fill=fluidColor, outline="")
-        if(fill_2):
-            self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
-        if(fill_3):
-            self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1, height,
-                                              fill=fluidColor, outline="")
-        if(fill_4):
-            self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
+        self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
+                                          fill='black', outline="")
+        self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width,
+                                          (9 * height / 16.0) - 1,
+                                          fill='black', outline="")
+        self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1,
+                                          height,
+                                          fill='black', outline="")
+        self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
+                                          fill='black', outline="")
+
+    def setPipes(self, state):
+        self.state = state
+        if(state):
+            if (self.line_1):
+                self.c.itemconfig(self.f1, fill=self.fluidColor)
+            if (self.line_2):
+                self.c.itemconfig(self.f2, fill=self.fluidColor)
+            if (self.line_3):
+                self.c.itemconfig(self.f3, fill=self.fluidColor)
+            if (self.line_4):
+                self.c.itemconfig(self.f4, fill=self.fluidColor)
+        else:
+            if (self.line_1):
+                self.c.itemconfig(self.f1, fill='black')
+            if (self.line_2):
+                self.c.itemconfig(self.f2, fill='black')
+            if (self.line_3):
+                self.c.itemconfig(self.f3, fill='black')
+            if (self.line_4):
+                self.c.itemconfig(self.f4, fill='black')
+
+    def getState(self):
+        return self.state
+
+    def getPipes(self):
+        return [self.l1, self.l2, self.l3, self.l4]
 
 
     def getWidget(self):
@@ -181,12 +307,32 @@ class Orifice:
         self.c.itemconfig(self.beforeP, text='B: ' + before + ' Pa')
         self.c.itemconfig(self.afterP, text='A: ' + after + ' Pa')
 
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
+
 class PressureSensor:
 
     def __init__(self, root, background, width, height, line_1, line_2, line_3, line_4, fluidColor, fill_1, fill_2, fill_3, fill_4):
         self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
         self.width = width
         self.height = height
+
+        self.line_1 = line_1
+        self.line_2 = line_2
+        self.line_3 = line_3
+        self.line_4 = line_4
+
+        self.fluidColor = fluidColor
+
+        self.state = False
+
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
 
         self.rect = self.c.create_oval(width / 4.0, height / 4.0, width * (3 / 4.0), height * (3 / 4.0),
                                             outline='white', width=1)
@@ -218,21 +364,50 @@ class PressureSensor:
             self.c.create_line(xy2, width=1, fill='white')
 
         #DRAW FLOW
-        if(fill_1):
-            self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
-                                                fill=fluidColor, outline="")
-        if(fill_2):
-            self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
-        if(fill_3):
-            self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1, height,
-                                              fill=fluidColor, outline="")
-        if(fill_4):
-            self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
+        self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
+                                          fill='black', outline="")
+        self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width,
+                                          (9 * height / 16.0) - 1,
+                                          fill='black', outline="")
+        self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1,
+                                          height,
+                                          fill='black', outline="")
+        self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
+                                          fill='black', outline="")
+
 
     def getWidget(self):
         return self.c
+
+    def setPipes(self, state):
+        self.state = state
+        if(state):
+            if (self.line_1):
+                self.c.itemconfig(self.f1, fill=self.fluidColor)
+            if (self.line_2):
+                self.c.itemconfig(self.f2, fill=self.fluidColor)
+            if (self.line_3):
+                self.c.itemconfig(self.f3, fill=self.fluidColor)
+            if (self.line_4):
+                self.c.itemconfig(self.f4, fill=self.fluidColor)
+        else:
+            if (self.line_1):
+                self.c.itemconfig(self.f1, fill='black')
+            if (self.line_2):
+                self.c.itemconfig(self.f2, fill='black')
+            if (self.line_3):
+                self.c.itemconfig(self.f3, fill='black')
+            if (self.line_4):
+                self.c.itemconfig(self.f4, fill='black')
+
+    def getState(self):
+        return self.state
+
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
 
     def setValues(self, pressure):
         self.c.itemconfig(self.p, text=pressure)
@@ -243,6 +418,20 @@ class TempSensor:
         self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
         self.width = width
         self.height = height
+
+        self.line_1 = line_1
+        self.line_2 = line_2
+        self.line_3 = line_3
+        self.line_4 = line_4
+
+        self.state = False
+
+        self.fluidColor = fluidColor
+
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
 
         self.rect = self.c.create_oval(width / 4.0, height / 4.0, width * (3 / 4.0), height * (3 / 4.0),
                                             outline='white', width=1)
@@ -274,21 +463,50 @@ class TempSensor:
             self.c.create_line(xy2, width=1, fill='white')
 
         #DRAW FLOW
-        if(fill_1):
-            self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
-                                                fill=fluidColor, outline="")
-        if(fill_2):
-            self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
-        if(fill_3):
-            self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1, height,
-                                              fill=fluidColor, outline="")
-        if(fill_4):
-            self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
-                                              fill=fluidColor, outline="")
+        self.f1 = self.c.create_rectangle((7 * width / 16.0) + 1, 0, (9 * width / 16.0) - 1, (height / 4.0) - 1,
+                                          fill='black', outline="")
+        self.f2 = self.c.create_rectangle((3 * width / 4.0) + 1, (7 * height / 16.0) + 1, width,
+                                          (9 * height / 16.0) - 1,
+                                          fill='black', outline="")
+        self.f3 = self.c.create_rectangle((7 * width / 16.0) + 1, (3 * height / 4.0) + 1, (9 * width / 16.0) - 1,
+                                          height,
+                                          fill='black', outline="")
+        self.f4 = self.c.create_rectangle(0, (7 * height / 16.0) + 1, (width / 4.0) - 1, (9 * height / 16.0) - 1,
+                                          fill='black', outline="")
+
 
     def getWidget(self):
         return self.c
+
+    def setPipes(self, state):
+        self.state = state
+        if(state):
+            if (self.line_1):
+                self.c.itemconfig(self.f1, fill=self.fluidColor)
+            if (self.line_2):
+                self.c.itemconfig(self.f2, fill=self.fluidColor)
+            if (self.line_3):
+                self.c.itemconfig(self.f3, fill=self.fluidColor)
+            if (self.line_4):
+                self.c.itemconfig(self.f4, fill=self.fluidColor)
+        else:
+            if (self.line_1):
+                self.c.itemconfig(self.f1, fill='black')
+            if (self.line_2):
+                self.c.itemconfig(self.f2, fill='black')
+            if (self.line_3):
+                self.c.itemconfig(self.f3, fill='black')
+            if (self.line_4):
+                self.c.itemconfig(self.f4, fill='black')
+
+    def getState(self):
+        return self.state
+
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
 
     def setValues(self, pressure):
         self.c.itemconfig(self.p, text=pressure)

@@ -11,6 +11,34 @@ import Tank
 import Valves
 import Pipes
 import Header
+import VirtualComponents
+
+import sys
+
+
+'''
+w -> text
+s -> solenoid
+p -> pressure sensor
+t -> tank
+r -> stepper
+o -> orifice
+n -> nozzle
+e -> temperature sensor
+
+| -> pipe(True, False, True, False)
+< -> pipe(True, False, True, True)
+> -> pipe(True, True, True, False)
+^ -> pipe(True, True, False, True)
+T -> pipe(False, True, True, True)
+- -> pipe(False, True, False, True)
+'''
+pid = '''
+   t    
+ s-+--s 
+p< |  >p
+s< | s+w
+'''
 
 gridLen = 85
 
@@ -41,12 +69,12 @@ lox.getWidget().place(x=gridLen*1, y=gridLen*5)
 k.getWidget().place(x=gridLen*6, y=gridLen*5)
 
 #All SOLENOID VALVES
-one = Valves.Solenoid(win, 'black', 1, gridLen, gridLen, False, True, True, False, fluidColor, False, False, False, False)
-two = Valves.Solenoid(win, 'black', 2, gridLen, gridLen, False, True, False, False, fluidColor, False, False, False, False)
-three = Valves.Solenoid(win, 'black', 3, gridLen, gridLen, False, False, True, True, fluidColor, False, False, False, False)
-four = Valves.Solenoid(win, 'black', 4, gridLen, gridLen, False, True, False, False, fluidColor, False, False, False, False)
-five = Valves.Solenoid(win, 'black', 5, gridLen, gridLen, True, False, False, True, fluidColor, False, False, False, False)
-six = Valves.Solenoid(win, 'black', 6, gridLen, gridLen, False, True, False, True, fluidColor, False, False, False, False)
+one = Valves.Solenoid(win, 'black', 1, gridLen, gridLen, False, True, True, False, fluidColor)
+two = Valves.Solenoid(win, 'black', 2, gridLen, gridLen, False, True, False, False, fluidColor)
+three = Valves.Solenoid(win, 'black', 3, gridLen, gridLen, False, False, True, True, fluidColor)
+four = Valves.Solenoid(win, 'black', 4, gridLen, gridLen, False, True, False, False, fluidColor)
+five = Valves.Solenoid(win, 'black', 5, gridLen, gridLen, True, False, False, True, fluidColor)
+six = Valves.Solenoid(win, 'black', 6, gridLen, gridLen, False, True, False, True, fluidColor)
 one.getWidget().place(x=gridLen*1, y=gridLen*2)
 two.getWidget().place(x=gridLen*0, y=gridLen*4)
 three.getWidget().place(x=gridLen*6, y=gridLen*2)
@@ -138,4 +166,56 @@ p22.getWidget().place(x=gridLen*6, y=gridLen*9)
 n = Nozzle.Nozzle(win, 'black', gridLen, gridLen*1.5)
 n.getWidget().place(x=gridLen*3, y=gridLen*10)
 
+
+#VIRTUAL COMPONENTS
+gn2.setNeighbors(None, None, p2, None)
+one.setNeighbors(None, p1, p5, None)
+p1.setNeighbors(None, p2, None, one)
+p2.setNeighbors(gn2, p3, p6, p1)
+p3.setNeighbors(None, p4, None, p2)
+p4.setNeighbors(None, three, None, p3)
+three.setNeighbors(None, None, p7, p4)
+ps1.setNeighbors(None, p5, None, None)
+p5.setNeighbors(one, None, p8, ps1)
+p6.setNeighbors(p2, None, p9, None)
+p7.setNeighbors(three, ps3, p10, None)
+ps3.setNeighbors(None, None, None, p7)
+two.setNeighbors(None, p8, None, None)
+p8.setNeighbors(p5, None, lox, two)
+p9.setNeighbors(p6, None, p11, None)
+four.setNeighbors(None, p10, None, None)
+p10.setNeighbors(p7, None, k, four)
+lox.setNeighbors(p8, None, o1, None)
+p11.setNeighbors(p9, None, p12, None)
+k.setNeighbors(p10, None, p13, None)
+o1.setNeighbors(lox, None, p14, None)
+p12.setNeighbors(p11, None, p15, None)
+p13.setNeighbors(k, None, s1, None)
+p14.setNeighbors(o1, None, p16, None)
+p15.setNeighbors(p12, six, five, None)
+six.setNeighbors(None, o2, None, p15)
+o2.setNeighbors(None, s2, p17, six)
+s2.setNeighbors(p13, None, p18, o2)
+p16.setNeighbors(p14, s1, None, None)
+s1.setNeighbors(None, five, p19, p16)
+five.setNeighbors(p15, None, None, s1)
+p17.setNeighbors(o2, p18, None, None)
+p18.setNeighbors(None, None, p22, p17)
+p19.setNeighbors(s1, p20, None, None)
+p20.setNeighbors(None, p21, None, p19) #3 is nozzle
+p21.setNeighbors(None, p2, None, p20)
+ps2.setNeighbors(None, p22, tp1, p21)
+p22.setNeighbors(p18, None, None, ps2)
+tp1.setNeighbors(ps2, None, None, None)
+
+VirtualComponents.traverse(gn2, None)
+'''while True:
+    #one.setState(True)
+    #three.setState(True)
+    #six.setState(True)
+    #five.setState(True)
+    VirtualComponents.traverse(gn2, None)
+    win.update()
+    time.sleep(3)
+'''
 win.mainloop()

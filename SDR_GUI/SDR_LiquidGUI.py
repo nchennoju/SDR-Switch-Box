@@ -51,6 +51,7 @@ def findArduino(portsFound):
             return str(portsFound[i])
     return "None"
 
+
 def conv(str):
     return str[2:len(str)-5]
 
@@ -84,18 +85,12 @@ def main():
     k.getWidget().place(x=gridLen * 6, y=gridLen * 5)
 
     # All SOLENOID VALVES
-    one = Valves.Solenoid(win, 'black', 1, gridLen, gridLen, False, True, True, False, fluidColor, False, False, False,
-                          False)
-    two = Valves.Solenoid(win, 'black', 2, gridLen, gridLen, False, True, False, False, fluidColor, False, False, False,
-                          False)
-    three = Valves.Solenoid(win, 'black', 3, gridLen, gridLen, False, False, True, True, fluidColor, False, False,
-                            False, False)
-    four = Valves.Solenoid(win, 'black', 4, gridLen, gridLen, False, True, False, False, fluidColor, False, False,
-                           False, False)
-    five = Valves.Solenoid(win, 'black', 5, gridLen, gridLen, True, False, False, True, fluidColor, False, False, False,
-                           False)
-    six = Valves.Solenoid(win, 'black', 6, gridLen, gridLen, False, True, False, True, fluidColor, False, False, False,
-                          False)
+    one = Valves.Solenoid(win, 'black', 1, gridLen, gridLen, False, True, True, False, fluidColor)
+    two = Valves.Solenoid(win, 'black', 2, gridLen, gridLen, False, True, False, False, fluidColor)
+    three = Valves.Solenoid(win, 'black', 3, gridLen, gridLen, False, False, True, True, fluidColor)
+    four = Valves.Solenoid(win, 'black', 4, gridLen, gridLen, False, True, False, False, fluidColor)
+    five = Valves.Solenoid(win, 'black', 5, gridLen, gridLen, True, False, False, True, fluidColor)
+    six = Valves.Solenoid(win, 'black', 6, gridLen, gridLen, False, True, False, True, fluidColor)
     one.getWidget().place(x=gridLen * 1, y=gridLen * 2)
     two.getWidget().place(x=gridLen * 0, y=gridLen * 4)
     three.getWidget().place(x=gridLen * 6, y=gridLen * 2)
@@ -163,7 +158,6 @@ def main():
     p20 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, True, True, '#41d94d', False)
     p21 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, False, True, '#41d94d', False)
     p22 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, False, True, '#41d94d', False)
-
     p1.getWidget().place(x=gridLen * 2, y=gridLen * 2)
     p2.getWidget().place(x=gridLen * 3, y=gridLen * 2)
     p3.getWidget().place(x=gridLen * 4, y=gridLen * 2)
@@ -203,8 +197,12 @@ def main():
         switch4.setLedState(False)
         switch5.setLedState(False)
         switch6.setLedState(False)
-        switch7.setLedState(False)
-        switch8.setLedState(False)
+        one.setState(False)
+        two.setState(False)
+        three.setState(False)
+        four.setState(False)
+        five.setState(False)
+        six.setState(False)
         print("All OFF COMPLETE")
 
     #MAIN CODE START
@@ -228,10 +226,10 @@ def main():
     test = findArduino(getPorts())
     if(test == "None"):
         arduinoSwitchbox = serial.Serial()
-        tk.Label(root, text="DISCONNECTED: " + test, bg="black", fg="red", font="Arial 14").pack()
+        tk.Label(root, text="DISCONNECTED: " + test, bg="black", fg="#ed3b3b", font="Arial 14").pack()
     else:
         arduinoSwitchbox = serial.Serial(test.split()[0], 115200)
-        tk.Label(root, text="CONNECTED: " + test, bg="black", fg="green2", font="Arial 14").pack()
+        tk.Label(root, text="CONNECTED: " + test, bg="black", fg="#41d94d", font="Arial 14").pack()
     print(test)
 
     #RELAY Switches created
@@ -252,8 +250,10 @@ def main():
     switch6 = RelaySwitch.Buttons(b, 1, arduinoSwitchbox, "Relay 2", 60,
                                   60, six)  # RelaySwitch.Switch(root, "Relay 2: ", 1, arduinoSwitchbox)
     #REPLACE
-    switch7 = RelaySwitch.Buttons(c, 2, arduinoSwitchbox, "Relay 3", 60, 60, one)  # RelaySwitch.Switch(root, "Relay 3: ", 2, arduinoSwitchbox)
-    switch8 = RelaySwitch.Buttons(d, 3, arduinoSwitchbox, "Relay 4", 60, 60, two)  # RelaySwitch.Switch(root, "Relay 4: ", 3, arduinoSwitchbox)
+    #switch7 = RelaySwitch.Buttons(c, 2, arduinoSwitchbox, "Relay 3", 60, 60, one)  # RelaySwitch.Switch(root, "Relay 3: ", 2, arduinoSwitchbox)
+    switch7 = RelaySwitch.StepperSlider(c, arduinoSwitchbox, 500, 60)
+    #switch8 = RelaySwitch.Buttons(d, 3, arduinoSwitchbox, "Relay 4", 60, 60, two)  # RelaySwitch.Switch(root, "Relay 4: ", 3, arduinoSwitchbox)
+    switch8 = RelaySwitch.StepperSlider(d, arduinoSwitchbox, 500, 60)
 
     a.pack()
     b.pack()
@@ -285,20 +285,130 @@ def main():
     g.pack()
     h.pack()
 
+    s2.setNeighbors(None, five, p19, p16)
+    s1.setNeighbors(p13, None, None, o2)
+
 
     while test != "None":
         strSerial = conv(str(arduinoSwitchbox.readline()))
         data = strSerial.split("\\t")
+
+        s2.setPercentage(switch7.getVal())
+        s1.setPercentage(switch8.getVal())
+
+
+        if(one.getState()):
+            one.setPipes(False, True, True, False)
+            p5.setState(True)
+            ps1.setPipes(True)
+            p8.setState(True)
+            two.setPipes(False, True, False, False)
+            o1.setPipes(True)
+            p14.setState(True)
+            p16.setState(True)
+            s2.setPipes(False, False, False, True)
+        else:
+            one.setPipes(False, True, False, False)
+            p5.setState(False)
+            ps1.setPipes(False)
+            p8.setState(False)
+            two.setPipes(False, False, False, False)
+            o1.setPipes(False)
+            p14.setState(False)
+            p16.setState(False)
+            s2.setPipes(False, False, False, False)
+
+        if(three.getState()):
+            three.setPipes(False, False, True, True)
+            p7.setState(True)
+            ps3.setPipes(True)
+            p10.setState(True)
+            four.setPipes(False, True, False, False)
+            p13.setState(True)
+            s1.setPipes(True, False, False, False)
+        else:
+            three.setPipes(False, False, False, True)
+            p7.setState(False)
+            ps3.setPipes(False)
+            p10.setState(False)
+            four.setPipes(False, False, False, False)
+            p13.setState(False)
+            s1.setPipes(False, False, False, False)
+
+        #PROBLEMS
+        if(five.getState()):
+            five.setPipes(True, False, False, True)
+            s2.setPipes(False, True, True, False)
+            p19.setState(True)
+            p20.setState(True)
+        else:
+            five.setPipes(True, False, False, False)
+            p19.setState(False)
+            p20.setState(False)
+
+        if(six.getState()):
+            six.setPipes(False, True, False, True)
+            o2.setPipes(True)
+            p17.setState(True)
+            p18.setState(True)
+            p22.setState(True)
+            ps2.setPipes(True)
+            tp1.setPipes(True)
+            p21.setState(True)
+            p20.setState(True)
+        else:
+            six.setPipes(False, False, False, True)
+            o2.setPipes(False)
+            p17.setState(False)
+            p18.setState(False)
+            p22.setState(False)
+            ps2.setPipes(False)
+            tp1.setPipes(False)
+            p21.setState(False)
+            p20.setState(False)
+
+        if (s2.getPercentage() > 0 and s2.left.getState()):
+            s2.setPipes(False, False, True, True)
+            p19.setState(True)
+            p20.setState(True)
+        if (s1.getPercentage() > 0 and s1.top.getState()):
+            s1.setPipes(True, False, False, True)
+            o2.setPipes(True)
+            p17.setState(True)
+            p18.setState(True)
+            p22.setState(True)
+            ps2.setPipes(True)
+            tp1.setPipes(True)
+            p21.setState(True)
+            p20.setState(True)
+
 
         if(data[0] == "Time"):
             file = open(fileName, "a")
             file.write(strSerial[0:len(strSerial) - 2] + "\n")
             print(strSerial[0:len(strSerial) - 2])
             file.close()
+
+            #P&ID INITIAL STATE
+            p1.setState(True)
+            p2.setState(True)
+            p3.setState(True)
+            p4.setState(True)
+            p6.setState(True)
+            p9.setState(True)
+            p11.setState(True)
+            p12.setState(True)
+            p15.setState(True)
+            one.setPipes(False, True, False, False)
+            three.setPipes(False, False, False, True)
+            five.setPipes(True, False, False, False)
+            six.setPipes(False, False, False, True)
+
+
         elif(len(data) > 4 and data[0] != "Time"):
             file = open(fileName, "a")
             file.write(strSerial[0:len(strSerial) - 2] + "\n")
-            print(strSerial[0:len(strSerial) - 2])
+            print('\t'.join(data))
             file.close()
             g1.setAngle(abs(float(data[1])) * (180.0 / 1023.0))
             g1.setText(data[1], "A0")

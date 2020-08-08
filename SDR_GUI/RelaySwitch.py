@@ -4,23 +4,22 @@ import tkinter as tk
 pad = 10
 
 class StepperSlider:
-    def __init__(self, root, pinNum, arduino, text, width, height, symbol):
+    def __init__(self, root, arduino, width, height):
         self.arduino = arduino
 
-        self.pinNum = pinNum
-
-        self.symbol = symbol
-
-        self.switch = tk.Frame(root, background='black')
+        self.switch = tk.Frame(root, background='black', width=width, height=height)
 
         var = DoubleVar()
-        self.scale = Scale(self.switch, orient=HORIZONTAL, variable=var, bg='black', fg='white', activebackground='black', activeforeground='white')
+        self.scale = Scale(self.switch, orient=HORIZONTAL, variable=var, bg='black', fg='white')
         self.scale.pack(side='left')
 
-        self.switch.pack(side='left', padx=4*pad)
+        self.switch.pack(side='left', padx=10*pad)
 
     def getFrame(self):
         return self.switch
+
+    def getVal(self):
+        return self.scale.get()
 
 class RelayLED:
 

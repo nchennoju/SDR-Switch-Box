@@ -14,6 +14,11 @@ class Tank:
         self.width = width
         self.height = height
 
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
+
         self.rect = self.c.create_rectangle(width/4.0, 0, width*(3/4.0), height-1, outline='white')
         self.fill = self.c.create_rectangle((width/4.0) + 1, 50,width*(3/4.0)-1, height-2, fill=fluidColor)
 
@@ -30,6 +35,12 @@ class Tank:
     def setTankReadout(self, tmp, pressure):
         self.c.itemconfig(self.pressure, text=str(pressure) + ' psi')
         self.c.itemconfig(self.temperature, text=str(tmp) + ' °C')
+
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
 
     def getWidget(self):
         return self.c
