@@ -11,7 +11,7 @@ unsigned long start;
 int num;
 
 //RELAY CONTROL Variables
-const int relayPins[] = {10, 9, 6, 13};
+const int relayPins[] = {7, 8, 5, 13};
 char in;
 int state = 0;
 int pin;
@@ -27,7 +27,7 @@ bool fil = true;
 
 void setup() {
   //Initialize Serial Monitor
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   //Declare relay pins as OUTPUTS
   for (int i = 0; i < sizeof(relayPins); i++) {
