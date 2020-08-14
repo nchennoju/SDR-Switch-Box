@@ -160,6 +160,14 @@ def main():
                 arduinoSwitchbox = serial.Serial(status.split()[0], 9600)
                 time.sleep(5)
                 connectionLabel.configure(text='CONNECTED ' + status, fg="#41d94d")
+                switch1.setArduino(arduinoSwitchbox)
+                switch2.setArduino(arduinoSwitchbox)
+                switch3.setArduino(arduinoSwitchbox)
+                switch4.setArduino(arduinoSwitchbox)
+                switch5.setArduino(arduinoSwitchbox)
+                switch6.setArduino(arduinoSwitchbox)
+                switch7.setArduino(arduinoSwitchbox)
+                switch8.setArduino(arduinoSwitchbox)
                 prevCon = True
             except SerialException:
                 print("ERROR: LOADING...")

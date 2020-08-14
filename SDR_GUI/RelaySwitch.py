@@ -18,6 +18,9 @@ class StepperSlider:
 
         self.switch.pack(side='left', padx=11*pad)
 
+    def setArduino(self, arduino):
+        self.arduino = arduino
+
     def getFrame(self):
         return self.switch
 
@@ -66,6 +69,8 @@ class Buttons:
         self.on_button.pack(side="right")
         self.switch.pack(side='left', padx=4*pad)
 
+    def setArduino(self, arduino):
+        self.arduino = arduino
 
     def actionOff(self):
         serialNum = (self.pinNum*2) + 0
