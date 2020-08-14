@@ -5,6 +5,7 @@ from tkinter import *
 #import time
 #import tkinter as tk
 
+
 class Solenoid:
 
     def __init__(self, root, background, num, width, height, line_1, line_2, line_3, line_4, fluidColor):

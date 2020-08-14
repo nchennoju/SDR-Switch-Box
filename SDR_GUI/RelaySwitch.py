@@ -2,18 +2,21 @@ from tkinter import *
 import tkinter as tk
 
 pad = 10
+width = 60
+height = 60
+sl_width = 500
 
 class StepperSlider:
-    def __init__(self, root, arduino, width, height):
+    def __init__(self, root, arduino):
         self.arduino = arduino
 
-        self.switch = tk.Frame(root, background='black', width=width, height=height)
+        self.switch = tk.Frame(root, background='black', width=sl_width, height=height)
 
         var = DoubleVar()
         self.scale = Scale(self.switch, orient=HORIZONTAL, variable=var, bg='black', fg='white')
         self.scale.pack(side='left')
 
-        self.switch.pack(side='left', padx=10*pad)
+        self.switch.pack(side='left', padx=11*pad)
 
     def getFrame(self):
         return self.switch
@@ -46,7 +49,7 @@ class RelayLED:
         return self.c
 
 class Buttons:
-    def __init__(self, root, pinNum, arduino, text, width, height, symbol):
+    def __init__(self, root, pinNum, arduino, text, symbol):
         self.arduino = arduino
 
         self.pinNum = pinNum

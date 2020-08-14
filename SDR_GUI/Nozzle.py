@@ -2,8 +2,8 @@
 from tkinter import *
 
 #UNCOMMENT IF TESTING
-#import time
-#import tkinter as tk
+'''import time
+import tkinter as tk'''
 
 class Nozzle:
 

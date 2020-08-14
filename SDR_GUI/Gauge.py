@@ -1,21 +1,19 @@
 # !/usr/bin/env python3
-import math
 from tkinter import *
-import tkinter as tk
 
 #UNCOMMENT IF TESTING
+'''import tkinter as tk
 import time
-import random
+import math
+import random'''
 
 class Gauge:
 
-    def __init__(self, root, background, startAngle, endAngle):
-        self.startAngle = startAngle
-        self.endAngle = endAngle
+    def __init__(self, root, background):
+        self.startAngle = -30
+        self.endAngle = 210
         self.c = Canvas(root, width=190, height=250, bg=background, highlightthickness=0)
 
-        #self.xy = [(100.0, 90.0), (100.0, 40.0)]
-        #self.line = self.c.create_line(self.xy, width=5, fill='white')
         size = 180
         self.dark = self.c.create_arc(30, 20, size - 10, size - 10, style="arc", width=20, start=self.startAngle, extent=(self.endAngle - self.startAngle)/2.0,
                             outline="#8a1919", tags=('arc1', 'arc2'))
@@ -33,13 +31,6 @@ class Gauge:
         if(theta < self.startAngle):
             theta = self.startAngle
 
-        # NEEDLE ITEMS
-        #radius = math.sqrt(pow(self.xy[1][0] - self.xy[0][0], 2) + pow(self.xy[1][1] - self.xy[0][1], 2))
-        #y = radius * math.sin(theta * math.pi / 180.0)
-        #x = radius * math.cos(theta * math.pi / 180.0)
-        #coor = [(100.0, 110.0)]
-        #coor.append([self.xy[0][0] + x, self.xy[0][1] - y])
-        #self.c.coords(self.line, coor[0][0], coor[0][1], coor[1][0], coor[1][1])
         self.c.itemconfig(self.dark, start=self.startAngle, extent=theta - self.startAngle)
         self.c.itemconfig(self.light, start=theta, extent=self.endAngle - theta)
 
@@ -50,19 +41,15 @@ class Gauge:
         self.c.itemconfig(self.readout, text=str)
         self.c.itemconfig(self.label, text=label)
 
-#TEST CODE
+
+#GAUGE TEST CODE
 '''win = tk.Tk()
 win.title("Guage ELement")
 win.geometry("800x200")
 win.configure(bg='black')
 
-
-
-
-
 g = Gauge(win, 'black', -30, 210)
 g.getWidget().pack(side='bottom')
-
 
 while True:
 

@@ -1,40 +1,34 @@
 #!/usr/bin python3
 """
-SDRSwitchBoxUI2.py: A python GUI developed to interface with SDR rocketry's liquid engine switchbox.
+SDR_LiquidGUI.py: A python GUI developed to interface with SDR rocketry's liquid engine switchbox.
 
     The interface consists of elements which write and read data to and from the Arduino to provide a
-    fully interactive program. The program is meant to run on the launch computer which is hardwired
+    fully interactive program GUI. The program is meant to run on the launch computer which is hardwired
     to the switchbox arduino via USB. Once the program is running, users are encouraged to move the
     window to fit their needs.
 
-    Current Assumption:
-    ** Board type is an Arduino Nano or Uno (used to find Arduino com ports automatically)
-
-    On the window, switch box relay controls will be present along with a series of Gauge objects
+    On one window, switch box relay controls will be present along with a series of Gauge objects
     which display sensor readings. Additionally, all realtime sensor readings are logged onto a .txt
     file onto the computer running the python script.
+
+    On the other window, an interactive P&ID vitual diagram is present with sensor readings updating
+    graphical elements. The P&ID enables an easy method to view the status of the engine at any time.
 
 """
 
 __author__      = "Nitish Chennoju"
 __credits__ = ["Colton Acosta"]
 
-#GUI Imports
+import time
 import serial
 import serial.tools.list_ports
+from serial import SerialException
+import tkinter as tk
 
 #Custom Classes
 import Gauge
 import RelaySwitch
-import time
-from random import randint
-import tkinter as tk
-
-import Nozzle
-import Tank
-import Valves
-import Pipes
-import Header
+import PandID
 
 
 
@@ -56,135 +50,6 @@ def conv(str):
     return str[2:len(str)-5]
 
 def main():
-    # Spacing constant within GUI
-    pad = 10
-
-    gridLen = 85
-
-    width = gridLen * 8
-    height = gridLen * 12
-
-    win = tk.Tk()
-    win.title("ELEMENT TEST")
-    win.geometry(str(width) + "x" + str(height))
-    win.configure(bg='black')
-
-    # CONSTANT
-    fluidColor = '#41d94d'
-
-    # HEADER
-    header = Header.Header(win, 'black', 'SDR P&ID GUI', width, gridLen, 24)
-    header.getWidget().place(x=gridLen * 0, y=gridLen * 0)
-
-    # All TANKS
-    gn2 = Tank.Tank(win, 'black', 'GN2', '#1d2396', gridLen, gridLen)
-    lox = Tank.Tank(win, 'black', 'LOx', '#1d2396', gridLen, gridLen)
-    k = Tank.Tank(win, 'black', 'K', '#1d2396', gridLen, gridLen)
-    gn2.getWidget().place(x=gridLen * 3, y=gridLen * 1)
-    lox.getWidget().place(x=gridLen * 1, y=gridLen * 5)
-    k.getWidget().place(x=gridLen * 6, y=gridLen * 5)
-
-    # All SOLENOID VALVES
-    one = Valves.Solenoid(win, 'black', 1, gridLen, gridLen, False, True, True, False, fluidColor)
-    two = Valves.Solenoid(win, 'black', 2, gridLen, gridLen, False, True, False, False, fluidColor)
-    three = Valves.Solenoid(win, 'black', 3, gridLen, gridLen, False, False, True, True, fluidColor)
-    four = Valves.Solenoid(win, 'black', 4, gridLen, gridLen, False, True, False, False, fluidColor)
-    five = Valves.Solenoid(win, 'black', 5, gridLen, gridLen, True, False, False, True, fluidColor)
-    six = Valves.Solenoid(win, 'black', 6, gridLen, gridLen, False, True, False, True, fluidColor)
-    one.getWidget().place(x=gridLen * 1, y=gridLen * 2)
-    two.getWidget().place(x=gridLen * 0, y=gridLen * 4)
-    three.getWidget().place(x=gridLen * 6, y=gridLen * 2)
-    four.getWidget().place(x=gridLen * 5, y=gridLen * 4)
-    five.getWidget().place(x=gridLen * 3, y=gridLen * 8)
-    six.getWidget().place(x=gridLen * 4, y=gridLen * 7)
-
-    # All STEPPER
-    s1 = Valves.Stepper(win, 'black', gridLen, gridLen, True, False, False, True, '#41d94d', False, False, False, False)
-    s2 = Valves.Stepper(win, 'black', gridLen, gridLen, False, True, True, True, '#41d94d', False, False, False, False)
-    s1.getWidget().place(x=gridLen * 6, y=gridLen * 7)
-    s2.getWidget().place(x=gridLen * 2, y=gridLen * 8)
-
-    # All ORIFICES
-    o1 = Valves.Orifice(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False, False, False, False)
-    o2 = Valves.Orifice(win, 'black', gridLen, gridLen, False, True, True, True, '#41d94d', False, False, False, False)
-    o1.getWidget().place(x=gridLen * 1, y=gridLen * 6)
-    o2.getWidget().place(x=gridLen * 5, y=gridLen * 7)
-
-    # All Pressure Sensors
-    ps1 = Valves.PressureSensor(win, 'black', gridLen, gridLen, False, True, False, False, '#41d94d', False, False,
-                                False, False)
-    ps2 = Valves.PressureSensor(win, 'black', gridLen, gridLen, False, True, True, True, '#41d94d', False, False, False,
-                                False)
-    ps3 = Valves.PressureSensor(win, 'black', gridLen, gridLen, False, False, False, True, '#41d94d', False, False,
-                                False, False)
-    ps1.getWidget().place(x=gridLen * 0, y=gridLen * 3)
-    ps2.getWidget().place(x=gridLen * 5, y=gridLen * 9)
-    ps3.getWidget().place(x=gridLen * 7, y=gridLen * 3)
-
-    tp1 = Valves.TempSensor(win, 'black', gridLen, gridLen, True, False, False, False, '#41d94d', False, False, False,
-                            False)
-    tp1.getWidget().place(x=gridLen * 5, y=gridLen * 10)
-
-    # All Text boxes
-    t1 = Header.Text(win, 'black', 'K Fill', gridLen, gridLen, 12)
-    t2 = Header.Text(win, 'black', 'K Drain', gridLen, gridLen, 12)
-    t3 = Header.Text(win, 'black', 'LOx\nFill/Drain', gridLen, gridLen, 12)
-    t4 = Header.Text(win, 'black', 'Regen\nCircuit', gridLen, gridLen, 12)
-    t1.getWidget().place(x=gridLen * 7, y=gridLen * 4)
-    t2.getWidget().place(x=gridLen * 7, y=gridLen * 6)
-    t3.getWidget().place(x=gridLen * 1, y=gridLen * 9)
-    t4.getWidget().place(x=gridLen * 7, y=gridLen * 9)
-
-    # All PIPES
-    p1 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, False, True, '#41d94d', False)
-    p2 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, True, '#41d94d', False)
-    p3 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, False, True, '#41d94d', False)
-    p4 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, False, True, '#41d94d', False)
-    p5 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, True, '#41d94d', False)
-    p6 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
-    p7 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, False, '#41d94d', False)
-    p8 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, True, '#41d94d', False)
-    p9 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
-    p10 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, True, '#41d94d', False)
-    p11 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
-    p12 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
-    p13 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, False, '#41d94d', False)
-    p14 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, True, False, '#41d94d', False)
-    p15 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, False, '#41d94d', False)
-    p16 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, True, False, '#41d94d', False)
-    p17 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, False, False, '#41d94d', False)
-    p18 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, False, True, True, '#41d94d', False)
-    p19 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, True, False, False, '#41d94d', False)
-    p20 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, True, True, '#41d94d', False)
-    p21 = Pipes.Pipe(win, 'black', gridLen, gridLen, False, True, False, True, '#41d94d', False)
-    p22 = Pipes.Pipe(win, 'black', gridLen, gridLen, True, False, False, True, '#41d94d', False)
-    p1.getWidget().place(x=gridLen * 2, y=gridLen * 2)
-    p2.getWidget().place(x=gridLen * 3, y=gridLen * 2)
-    p3.getWidget().place(x=gridLen * 4, y=gridLen * 2)
-    p4.getWidget().place(x=gridLen * 5, y=gridLen * 2)
-    p5.getWidget().place(x=gridLen * 1, y=gridLen * 3)
-    p6.getWidget().place(x=gridLen * 3, y=gridLen * 3)
-    p7.getWidget().place(x=gridLen * 6, y=gridLen * 3)
-    p8.getWidget().place(x=gridLen * 1, y=gridLen * 4)
-    p9.getWidget().place(x=gridLen * 3, y=gridLen * 4)
-    p10.getWidget().place(x=gridLen * 6, y=gridLen * 4)
-    p11.getWidget().place(x=gridLen * 3, y=gridLen * 5)
-    p12.getWidget().place(x=gridLen * 3, y=gridLen * 6)
-    p13.getWidget().place(x=gridLen * 6, y=gridLen * 6)
-    p14.getWidget().place(x=gridLen * 1, y=gridLen * 7)
-    p15.getWidget().place(x=gridLen * 3, y=gridLen * 7)
-    p16.getWidget().place(x=gridLen * 1, y=gridLen * 8)
-    p17.getWidget().place(x=gridLen * 5, y=gridLen * 8)
-    p18.getWidget().place(x=gridLen * 6, y=gridLen * 8)
-    p19.getWidget().place(x=gridLen * 2, y=gridLen * 9)
-    p20.getWidget().place(x=gridLen * 3, y=gridLen * 9)
-    p21.getWidget().place(x=gridLen * 4, y=gridLen * 9)
-    p22.getWidget().place(x=gridLen * 6, y=gridLen * 9)
-
-    # NOZZLE
-    n = Nozzle.Nozzle(win, 'black', gridLen, gridLen * 1.5)
-    n.getWidget().place(x=gridLen * 3, y=gridLen * 10)
-
 
     def startup():
         print("Startup")
@@ -197,63 +62,55 @@ def main():
         switch4.setLedState(False)
         switch5.setLedState(False)
         switch6.setLedState(False)
-        one.setState(False)
-        two.setState(False)
-        three.setState(False)
-        four.setState(False)
-        five.setState(False)
-        six.setState(False)
+        plumbing.one.setState(False)
+        plumbing.two.setState(False)
+        plumbing.three.setState(False)
+        plumbing.four.setState(False)
+        plumbing.five.setState(False)
+        plumbing.six.setState(False)
         print("All OFF COMPLETE")
 
-    #MAIN CODE START
+    # Spacing constants within GUI
+    pad = 10
+    gridLen = 85
+
+    # Get file name from user
     print("Enter file name (don't include file extension): ", end='')
     fileName = input() + ".txt"
 
 
+    #Initialize GUI Windows
+    plumbing = PandID.Engine_Plumbing(gridLen) #P&ID diagram window
 
-
-    #Initialize GUI Window
     root = tk.Tk()
-    width = int(root.winfo_screenwidth())
-    height = int(root.winfo_screenheight())
-    dim = str(height) + "x" + str(width)
     root.title("SDR - Liquid Engine Dashboard");
     root.configure(background = "black")
-    root.geometry(dim)
 
     tk.Label(root, text="SDR - Liquid Engine Dashboard", bg="black", fg="white", font="Arial 30").pack(pady=40)
 
-    test = findArduino(getPorts())
-    if(test == "None"):
+    #ARDUINO STATUS
+    status = findArduino(getPorts())
+    connectionLabel = tk.Label(root, text='CONNECTED' + status, bg="black", fg="#41d94d", font="Arial 14")
+    if(status == "None"):
         arduinoSwitchbox = serial.Serial()
-        tk.Label(root, text="DISCONNECTED: " + test, bg="black", fg="#ed3b3b", font="Arial 14").pack()
+        connectionLabel.configure(text='DISCONNECTED' + status, fg="#ed3b3b")
     else:
-        arduinoSwitchbox = serial.Serial(test.split()[0], 115200)
-        tk.Label(root, text="CONNECTED: " + test, bg="black", fg="#41d94d", font="Arial 14").pack()
-    print(test)
+        arduinoSwitchbox = serial.Serial(status.split()[0], 9600)
+    connectionLabel.pack()
 
     #RELAY Switches created
     a = tk.Frame(root, bg='black')
     b = tk.Frame(root, bg='black')
     c = tk.Frame(root, bg='black')
     d = tk.Frame(root, bg='black')
-    switch1 = RelaySwitch.Buttons(a, 0, arduinoSwitchbox, "Relay 1", 60,
-                                  60, one)  # RelaySwitch.Switch(root, "Relay 1: ", 0, arduinoSwitchbox)
-    switch2 = RelaySwitch.Buttons(b, 1, arduinoSwitchbox, "Relay 2", 60,
-                                  60, two)  # RelaySwitch.Switch(root, "Relay 2: ", 1, arduinoSwitchbox)
-    switch3 = RelaySwitch.Buttons(c, 2, arduinoSwitchbox, "Relay 3", 60,
-                                  60, three)  # RelaySwitch.Switch(root, "Relay 3: ", 2, arduinoSwitchbox)
-    switch4 = RelaySwitch.Buttons(d, 3, arduinoSwitchbox, "Relay 4", 60,
-                                  60, four)  # RelaySwitch.Switch(root, "Relay 4: ", 3, arduinoSwitchbox)
-    switch5 = RelaySwitch.Buttons(a, 0, arduinoSwitchbox, "Relay 1", 60,
-                                  60, five)  # RelaySwitch.Switch(root, "Relay 1: ", 0, arduinoSwitchbox)
-    switch6 = RelaySwitch.Buttons(b, 1, arduinoSwitchbox, "Relay 2", 60,
-                                  60, six)  # RelaySwitch.Switch(root, "Relay 2: ", 1, arduinoSwitchbox)
-    #REPLACE
-    #switch7 = RelaySwitch.Buttons(c, 2, arduinoSwitchbox, "Relay 3", 60, 60, one)  # RelaySwitch.Switch(root, "Relay 3: ", 2, arduinoSwitchbox)
-    switch7 = RelaySwitch.StepperSlider(c, arduinoSwitchbox, 500, 60)
-    #switch8 = RelaySwitch.Buttons(d, 3, arduinoSwitchbox, "Relay 4", 60, 60, two)  # RelaySwitch.Switch(root, "Relay 4: ", 3, arduinoSwitchbox)
-    switch8 = RelaySwitch.StepperSlider(d, arduinoSwitchbox, 500, 60)
+    switch1 = RelaySwitch.Buttons(a, 0, arduinoSwitchbox, "Relay 1", plumbing.one)
+    switch2 = RelaySwitch.Buttons(b, 1, arduinoSwitchbox, "Relay 2", plumbing.two)
+    switch3 = RelaySwitch.Buttons(c, 2, arduinoSwitchbox, "Relay 3", plumbing.three)
+    switch4 = RelaySwitch.Buttons(d, 3, arduinoSwitchbox, "Relay 4", plumbing.four)
+    switch5 = RelaySwitch.Buttons(a, 0, arduinoSwitchbox, "Relay 5", plumbing.five)
+    switch6 = RelaySwitch.Buttons(b, 1, arduinoSwitchbox, "Relay 6", plumbing.six)
+    switch7 = RelaySwitch.StepperSlider(c, arduinoSwitchbox)
+    switch8 = RelaySwitch.StepperSlider(d, arduinoSwitchbox)
 
     a.pack()
     b.pack()
@@ -269,143 +126,165 @@ def main():
     off.pack(pady=pad)
 
 
-    #------------------------ DATA LOGGER -------------------------------
-    g1 = Gauge.Gauge(g, 'black', -30, 210)
+    #------------------------ DATA LOGGER GUI GAUGE -----------------------------
+    g1 = Gauge.Gauge(g, 'black')
     g1.setText("Nan", "A0")
     g1.getWidget().pack(side="left")
-    g2 = Gauge.Gauge(g, 'black', -30, 210)
+    g2 = Gauge.Gauge(g, 'black')
     g2.setText("Nan", "A1")
     g2.getWidget().pack(side="left")
-    g3 = Gauge.Gauge(h, 'black', -30, 210)
+    g3 = Gauge.Gauge(h, 'black')
     g3.setText("Nan", "A2")
     g3.getWidget().pack(side="left")
-    g4 = Gauge.Gauge(h, 'black', -30, 210)
+    g4 = Gauge.Gauge(h, 'black')
     g4.setText("Nan", "A3")
     g4.getWidget().pack(side="right")
     g.pack()
     h.pack()
 
-    s2.setNeighbors(None, five, p19, p16)
-    s1.setNeighbors(p13, None, None, o2)
+    print(status)
+    prevCon = True
 
+    while True:
+        #ARDUINO CONNECTION CHECK
+        status = findArduino(getPorts())
+        if (status == "None"):
+            connectionLabel.configure(text='DISCONNECTED ' + status, fg="#ed3b3b")
+            g1.setText("Nan", "A0")
+            g2.setText("Nan", "A1")
+            g3.setText("Nan", "A2")
+            g4.setText("Nan", "A3")
+            prevCon = False
+        elif(not prevCon and status != 'None'):
+            try:
+                arduinoSwitchbox = serial.Serial(status.split()[0], 9600)
+                time.sleep(5)
+                connectionLabel.configure(text='CONNECTED ' + status, fg="#41d94d")
+                prevCon = True
+            except SerialException:
+                print("ERROR: LOADING...")
+        else:
+            connectionLabel.configure(text='CONNECTED ' + status, fg="#41d94d")
 
-    while test != "None":
-        strSerial = conv(str(arduinoSwitchbox.readline()))
+        #Attempting to get data from Arduino
+        try:
+            strSerial = conv(str(arduinoSwitchbox.readline()))
+        except SerialException:
+            strSerial = ''
+            print("ERROR")
+
         data = strSerial.split("\\t")
 
-        s2.setPercentage(switch7.getVal())
-        s1.setPercentage(switch8.getVal())
+        plumbing.s2.setPercentage(switch7.getVal())
+        plumbing.s1.setPercentage(switch8.getVal())
 
-
-        if(one.getState()):
-            one.setPipes(False, True, True, False)
-            p5.setState(True)
-            ps1.setPipes(True)
-            p8.setState(True)
-            two.setPipes(False, True, False, False)
-            o1.setPipes(True)
-            p14.setState(True)
-            p16.setState(True)
-            s2.setPipes(False, False, False, True)
+        if (plumbing.one.getState()):
+            plumbing.one.setPipes(False, True, True, False)
+            plumbing.p5.setState(True)
+            plumbing.ps1.setPipes(True)
+            plumbing.p8.setState(True)
+            plumbing.two.setPipes(False, True, False, False)
+            plumbing.o1.setPipes(True)
+            plumbing.p14.setState(True)
+            plumbing.p16.setState(True)
+            plumbing.s2.setPipes(False, False, False, True)
         else:
-            one.setPipes(False, True, False, False)
-            p5.setState(False)
-            ps1.setPipes(False)
-            p8.setState(False)
-            two.setPipes(False, False, False, False)
-            o1.setPipes(False)
-            p14.setState(False)
-            p16.setState(False)
-            s2.setPipes(False, False, False, False)
+            plumbing.one.setPipes(False, True, False, False)
+            plumbing.p5.setState(False)
+            plumbing.ps1.setPipes(False)
+            plumbing.p8.setState(False)
+            plumbing.two.setPipes(False, False, False, False)
+            plumbing.o1.setPipes(False)
+            plumbing.p14.setState(False)
+            plumbing.p16.setState(False)
+            plumbing.s2.setPipes(False, False, False, False)
 
-        if(three.getState()):
-            three.setPipes(False, False, True, True)
-            p7.setState(True)
-            ps3.setPipes(True)
-            p10.setState(True)
-            four.setPipes(False, True, False, False)
-            p13.setState(True)
-            s1.setPipes(True, False, False, False)
+        if (plumbing.three.getState()):
+            plumbing.three.setPipes(False, False, True, True)
+            plumbing.p7.setState(True)
+            plumbing.ps3.setPipes(True)
+            plumbing.p10.setState(True)
+            plumbing.four.setPipes(False, True, False, False)
+            plumbing.p13.setState(True)
+            plumbing.s1.setPipes(True, False, False, False)
         else:
-            three.setPipes(False, False, False, True)
-            p7.setState(False)
-            ps3.setPipes(False)
-            p10.setState(False)
-            four.setPipes(False, False, False, False)
-            p13.setState(False)
-            s1.setPipes(False, False, False, False)
+            plumbing.three.setPipes(False, False, False, True)
+            plumbing.p7.setState(False)
+            plumbing.ps3.setPipes(False)
+            plumbing.p10.setState(False)
+            plumbing.four.setPipes(False, False, False, False)
+            plumbing.p13.setState(False)
+            plumbing.s1.setPipes(False, False, False, False)
 
-        #PROBLEMS
-        if(five.getState()):
-            five.setPipes(True, False, False, True)
-            s2.setPipes(False, True, True, False)
-            p19.setState(True)
-            p20.setState(True)
+        # PROBLEMS
+        if (plumbing.five.getState()):
+            plumbing.five.setPipes(True, False, False, True)
+            plumbing.s2.setPipes(False, True, True, False)
+            plumbing.p19.setState(True)
+            plumbing.p20.setState(True)
         else:
-            five.setPipes(True, False, False, False)
-            p19.setState(False)
-            p20.setState(False)
+            plumbing.five.setPipes(True, False, False, False)
+            plumbing.p19.setState(False)
+            plumbing.p20.setState(False)
 
-        if(six.getState()):
-            six.setPipes(False, True, False, True)
-            o2.setPipes(True)
-            p17.setState(True)
-            p18.setState(True)
-            p22.setState(True)
-            ps2.setPipes(True)
-            tp1.setPipes(True)
-            p21.setState(True)
-            p20.setState(True)
+        if (plumbing.six.getState()):
+            plumbing.six.setPipes(False, True, False, True)
+            plumbing.o2.setPipes(True)
+            plumbing.p17.setState(True)
+            plumbing.p18.setState(True)
+            plumbing.p22.setState(True)
+            plumbing.ps2.setPipes(True)
+            plumbing.tp1.setPipes(True)
+            plumbing.p21.setState(True)
+            plumbing.p20.setState(True)
         else:
-            six.setPipes(False, False, False, True)
-            o2.setPipes(False)
-            p17.setState(False)
-            p18.setState(False)
-            p22.setState(False)
-            ps2.setPipes(False)
-            tp1.setPipes(False)
-            p21.setState(False)
-            p20.setState(False)
+            plumbing.six.setPipes(False, False, False, True)
+            plumbing.o2.setPipes(False)
+            plumbing.p17.setState(False)
+            plumbing.p18.setState(False)
+            plumbing.p22.setState(False)
+            plumbing.ps2.setPipes(False)
+            plumbing.tp1.setPipes(False)
+            plumbing.p20.setState(False)
 
-        if (s2.getPercentage() > 0 and s2.left.getState()):
-            s2.setPipes(False, False, True, True)
-            p19.setState(True)
-            p20.setState(True)
-        if (s1.getPercentage() > 0 and s1.top.getState()):
-            s1.setPipes(True, False, False, True)
-            o2.setPipes(True)
-            p17.setState(True)
-            p18.setState(True)
-            p22.setState(True)
-            ps2.setPipes(True)
-            tp1.setPipes(True)
-            p21.setState(True)
-            p20.setState(True)
+        if (plumbing.s2.getPercentage() > 0 and plumbing.s2.left.getState()):
+            plumbing.s2.setPipes(False, False, True, True)
+            plumbing.p19.setState(True)
+            plumbing.p20.setState(True)
+        if (plumbing.s1.getPercentage() > 0 and plumbing.s1.top.getState()):
+            plumbing.s1.setPipes(True, False, False, True)
+            plumbing.o2.setPipes(True)
+            plumbing.p17.setState(True)
+            plumbing.p18.setState(True)
+            plumbing.p22.setState(True)
+            plumbing.ps2.setPipes(True)
+            plumbing.tp1.setPipes(True)
+            plumbing.p21.setState(True)
+            plumbing.p20.setState(True)
 
-
-        if(data[0] == "Time"):
+        if (data[0] == "Time"):
             file = open(fileName, "a")
             file.write(strSerial[0:len(strSerial) - 2] + "\n")
             print(strSerial[0:len(strSerial) - 2])
             file.close()
 
-            #P&ID INITIAL STATE
-            p1.setState(True)
-            p2.setState(True)
-            p3.setState(True)
-            p4.setState(True)
-            p6.setState(True)
-            p9.setState(True)
-            p11.setState(True)
-            p12.setState(True)
-            p15.setState(True)
-            one.setPipes(False, True, False, False)
-            three.setPipes(False, False, False, True)
-            five.setPipes(True, False, False, False)
-            six.setPipes(False, False, False, True)
+            # P&ID INITIAL STATE
+            plumbing.p1.setState(True)
+            plumbing.p2.setState(True)
+            plumbing.p3.setState(True)
+            plumbing.p4.setState(True)
+            plumbing.p6.setState(True)
+            plumbing.p9.setState(True)
+            plumbing.p11.setState(True)
+            plumbing.p12.setState(True)
+            plumbing.p15.setState(True)
+            plumbing.one.setPipes(False, True, False, False)
+            plumbing.three.setPipes(False, False, False, True)
+            plumbing.five.setPipes(True, False, False, False)
+            plumbing.six.setPipes(False, False, False, True)
 
 
-        elif(len(data) > 4 and data[0] != "Time"):
+        elif (len(data) > 4 and data[0] != "Time"):
             file = open(fileName, "a")
             file.write(strSerial[0:len(strSerial) - 2] + "\n")
             print('\t'.join(data))
@@ -420,11 +299,7 @@ def main():
             g4.setText(data[4].replace('\n', ''), "A3")
 
         root.update()
-        win.update()
-
-    root.mainloop()
-    win.mainloop()
-
+        plumbing.getWindow().update()
 
 if __name__ == "__main__":
     main()

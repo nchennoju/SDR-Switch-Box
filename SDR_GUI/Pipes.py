@@ -5,6 +5,28 @@ from tkinter import *
 #import time
 #import tkinter as tk
 
+"""
+The following class makes it simple to connect different GUI P&ID objects together with pipes.
+The PIPE Class operates on five main parameters: line1, line2, line3, line4, fill
+
+All 5 parameters are of the data type boolean and control the type of pipe and whether fluid is running through it
+(repsectively)
+
+The booleans line# correspond to which side gets a pipe:
+line1: 12:00
+line2: 3:00
+line3: 6:00
+line4: 9:00
+
+        ln1
+        
+  ln4    P    ln2
+   
+        ln3
+        
+By modulating these input parameters, any pipe can be designed to fit the GUI P&ID.
+"""
+
 class Pipe:
 
     def __init__(self, root, background, width, height, line_1, line_2, line_3, line_4, fluidColor, fill):
