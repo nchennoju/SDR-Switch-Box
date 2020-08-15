@@ -142,8 +142,9 @@ def main():
     g.pack()
     h.pack()
 
-    print(status)
     prevCon = True
+
+    # Main Program Loop
 
     while True:
         #ARDUINO CONNECTION CHECK
