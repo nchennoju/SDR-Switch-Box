@@ -8,6 +8,8 @@ sl_width = 500
 
 class StepperSlider:
     def __init__(self, root, arduino):
+
+
         self.arduino = arduino
 
         self.switch = tk.Frame(root, background='black', width=sl_width, height=height)

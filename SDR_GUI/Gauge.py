@@ -9,9 +9,10 @@ import random'''
 
 class Gauge:
 
-    def __init__(self, root, background):
+    def __init__(self, root, background, max):
         self.startAngle = -30
         self.endAngle = 210
+        self.max = max
         self.c = Canvas(root, width=190, height=250, bg=background, highlightthickness=0)
 
         size = 180
@@ -24,8 +25,10 @@ class Gauge:
         self.readout = self.c.create_text(100, 85, font=("Arial", int(size / 10), 'bold'), fill="white", text='')
         self.label = self.c.create_text(100, 130, font=("Arial", int(size / 14), 'bold'), fill="white", text='')
 
-    def setAngle(self, theta): #-30 to 210 value
+    def setAngle(self, value):
         #Gauge bounds set
+        theta = self.endAngle - ((value / self.max) * abs(self.endAngle - self.startAngle))
+
         if(theta > self.endAngle):
             theta = self.endAngle
         if(theta < self.startAngle):
@@ -42,29 +45,26 @@ class Gauge:
         self.c.itemconfig(self.label, text=label)
 
 
+
+
 #GAUGE TEST CODE
 '''win = tk.Tk()
-win.title("Guage ELement")
+win.title("Gauge ELement")
 win.geometry("800x200")
 win.configure(bg='black')
 
-g = Gauge(win, 'black', -30, 210)
+g = Gauge(win, 'black', 5)
 g.getWidget().pack(side='bottom')
-
 while True:
 
-    for i in range(240):
-        angle = i - 30
-        #random.randint(-10, 190)
-        g.setAngle(angle)
-        time.sleep(0.01)
+    for i in range(6):
+        g.setAngle(i)
+        time.sleep(0.1)
         win.update()
 
-    for i in range(240):
-        angle = 210 - i
-        #random.randint(-10, 190)
-        g.setAngle(angle)
-        time.sleep(0.01)
+    for i in range(6):
+        g.setAngle(5-i)
+        time.sleep(0.1)
         win.update()
 
 win.mainloop()'''

@@ -10,6 +10,11 @@ class Nozzle:
     def __init__(self, root, background, width, height):
         padding = 25
 
+        self.top = None
+        self.right = None
+        self.bottom = None
+        self.left = None
+
         self.c = Canvas(root, width=width, height=height, bg=background, highlightthickness=0)
         self.width = width
         self.height = height
@@ -33,6 +38,12 @@ class Nozzle:
         self.thrust = self.c.create_text(width/2.0, (height/2.0) - padding, font=("Arial", 10), fill="white", text='thrust')
         self.pressure = self.c.create_text(width/2.0, height/2.0, font=("Arial", 10), fill="white", text='pressure')
 
+
+    def setNeighbors(self, top, right, bottom, left):
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
 
     def getWidget(self):
         return self.c

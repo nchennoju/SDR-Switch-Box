@@ -10,6 +10,7 @@ import Header
 class Engine_Plumbing:
 
     def __init__(self, gridLen):
+
         width = gridLen * 8
         height = gridLen * 12
 
@@ -41,11 +42,21 @@ class Engine_Plumbing:
         self.five = Valves.Solenoid(self.win, 'black', 5, gridLen, gridLen, True, False, False, True, fluidColor)
         self.six = Valves.Solenoid(self.win, 'black', 6, gridLen, gridLen, False, True, False, True, fluidColor)
         self.one.getWidget().place(x=gridLen * 1, y=gridLen * 2)
+        self.one.setIn(2)
+        self.one.setOut(3)
         self.two.getWidget().place(x=gridLen * 0, y=gridLen * 4)
+        self.two.setIn(2)
         self.three.getWidget().place(x=gridLen * 6, y=gridLen * 2)
+        self.three.setIn(4)
+        self.three.setOut(3)
         self.four.getWidget().place(x=gridLen * 5, y=gridLen * 4)
+        self.four.setIn(2)
         self.five.getWidget().place(x=gridLen * 3, y=gridLen * 8)
+        self.five.setIn(1)
+        self.five.setOut(4)
         self.six.getWidget().place(x=gridLen * 4, y=gridLen * 7)
+        self.six.setIn(4)
+        self.six.setOut(2)
 
         # All STEPPER
         self.s1 = Valves.Stepper(self.win, 'black', gridLen, gridLen, True, False, False, True, '#41d94d', False, False, False,
@@ -140,8 +151,118 @@ class Engine_Plumbing:
         self.n = Nozzle.Nozzle(self.win, 'black', gridLen, gridLen * 1.5)
         self.n.getWidget().place(x=gridLen * 3, y=gridLen * 10)
 
-        self.s2.setNeighbors(None, self.five, self.p19, self.p16)
+        #self.s2.setNeighbors(None, self.five, self.p19, self.p16)
+        #self.s1.setNeighbors(self.p13, None, None, self.o2)
+
+
+        #SET ALL VIRTUAL COMPONENTS (linked list)
+        self.head = self.gn2
+        #row 1
+        self.gn2.setNeighbors(None, None, self.p2, None)
+        #row 2
+        self.one.setNeighbors(None, self.p1, self.p5, None)
+        self.p1.setNeighbors(None, self.p2, None, self.one)
+        self.p2.setNeighbors(self.gn2, self.p3, self.p6, self.p1)
+        self.p3.setNeighbors(None, self.p4, None, self.p2)
+        self.p4.setNeighbors(None, self.three, None, self.p3)
+        self.three.setNeighbors(None, None, self.p7, self.p4)
+        #row 3
+        self.ps1.setNeighbors(None, self.p5, None, None)
+        self.p5.setNeighbors(self.one, None, self.p8, self.ps1)
+        self.p6.setNeighbors(self.p2, None, self.p9, None)
+        self.p7.setNeighbors(self.three, self.ps2, self.p10, None)
+        self.ps2.setNeighbors(None, None, None, self.p7)
+        #row 4
+        self.two.setNeighbors(None, self.p8, None, None)
+        self.p8.setNeighbors(self.p5, None, self.lox, self.two)
+        self.p9.setNeighbors(self.p6, None, self.p11, None)
+        self.four.setNeighbors(None, self.p10, None, None)
+        self.p10.setNeighbors(self.p7, None, self.k, self.four)
+        #row5
+        self.lox.setNeighbors(self.p8, None, self.o1, None)
+        self.p11.setNeighbors(self.p9, None, self.p12, None)
+        self.k.setNeighbors(self.p10, None, self.p13, None)
+        #row 6
+        self.o1.setNeighbors(self.lox, None, self.p14, None)
+        self.p12.setNeighbors(self.p11, None, self.p15, None)
+        self.p13.setNeighbors(self.k, None, self.s1, None)
+        #row 7
+        self.p14.setNeighbors(self.o1, None, self.p16, None)
+        self.p15.setNeighbors(self.p12, self.six, self.five, None)
+        self.six.setNeighbors(None, self.o2, None, self.p15)
+        self.o2.setNeighbors(None, self.s1, self.p17, self.six)
         self.s1.setNeighbors(self.p13, None, None, self.o2)
+        #row 8
+        self.p16.setNeighbors(self.p14, self.s2, None, None)
+        self.s2.setNeighbors(None, self.five, self.p19, self.p16)
+        self.five.setNeighbors(self.p15, None, None, self.s2)
+        self.p17.setNeighbors(self.o2, self.p18, None, None)
+        self.p18.setNeighbors(None, None, self.p22, self.p17)
+        #row 9
+        self.p19.setNeighbors(self.s2, self.p20, None, None)
+        self.p20.setNeighbors(None, self.p21, self.n, self.p19)
+        self.p21.setNeighbors(None, self.ps3, None, self.p20)
+        self.ps3.setNeighbors(None, self.p22, self.tp1, self.p21)
+        self.p22.setNeighbors(self.p18, None, None, self.ps3)
+        #row 10
+        self.n.setNeighbors(self.p20, None, None, None)
+        self.tp1.setNeighbors(self.ps3, None, None, None)
+
+
+    def getHead(self):
+        return self.gn2
+
+    def updatePipeStatus(self):
+        head = self.getHead()
+        prvHead = None
+
+        listMultiplePaths = []
+        while(head is not Nozzle.Nozzle):
+            num = 0
+            print(type(head))
+            if (type(head) is Pipes.Pipe):
+                head.setState(True)
+            if(head is None):
+                print("DONE")
+                break
+            if(type(head) is Valves.Solenoid and not head.getState()):
+                if(type(head.right) is Pipes.Pipe and head.right.getState()):
+                    head.setPipes(False, True, False, False)
+                if(type(head.left) is Pipes.Pipe and head.left.getState()):
+                    head.setPipes(False, False, False, True)
+                break
+
+            if(head.left is not None):
+                num+=1
+            if(head.right is not None):
+                num+=1
+            if(head.bottom is not None):
+                num+=1
+
+            if(num >= 2):
+                listMultiplePaths.append(head)
+
+            if(head.left is not None and head.left != prvHead):
+                print("Left " + str(type(head.left)))
+                print("Prv Head: " + str(type(prvHead)))
+                prvHead = head
+                head = head.left
+            elif(head.bottom is not None and head.bottom != prvHead):
+                print("Bottom " + str(type(head.bottom)))
+                print("Prv Head: " + str(type(prvHead)))
+                prvHead = head
+                head = head.bottom
+            elif(head.right is not None and head.right != prvHead):
+                print("Right " + str(type(head.right)))
+                print("Prv Head: " + str(type(prvHead)))
+                prvHead = head
+                head = head.right
+            else:
+                print("DONE")
+                break
+
+
+
 
     def getWindow(self):
         return self.win

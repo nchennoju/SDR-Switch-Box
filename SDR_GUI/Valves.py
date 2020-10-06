@@ -13,12 +13,16 @@ class Solenoid:
         self.width = width
         self.height = height
 
+        self.inlet = -1
+        self.outlet = -1
+
         self.state = False
 
         self.fluidColor = fluidColor
 
         self.fill = self.c.create_rectangle((width/4.0), (height/4.0), (width*(3/4.0)), (height*(3/4.0)), fill='#ab1f1f')
         self.rect = self.c.create_rectangle(width/4.0, height/4.0, width*(3/4.0), height*(3/4.0), outline='white')
+
 
         self.l1 = line_1
         self.l2 = line_2
@@ -73,16 +77,79 @@ class Solenoid:
         self.bottom = bottom
         self.left = left
 
+    def setIn(self, num):
+        self.inlet = num
+
+    def setOut(self, num):
+        self.outlet = num
+
     def getState(self):
         return self.state
 
     def setState(self, open):
+        inlet = False
+        if (self.inlet == 1):
+            if(self.top.getState()):
+                self.c.itemconfig(self.f1, fill=self.fluidColor)
+                inlet = True
+            else:
+                self.c.itemconfig(self.f1, fill='black')
+        if (self.inlet == 2):
+            if(self.right.getState()):
+                self.c.itemconfig(self.f2, fill=self.fluidColor)
+                inlet = True
+            else:
+                self.c.itemconfig(self.f2, fill='black')
+        if (self.inlet == 3):
+            if (self.bottom.getState()):
+                self.c.itemconfig(self.f3, fill=self.fluidColor)
+                inlet = True
+            else:
+                self.c.itemconfig(self.f3, fill='black')
+        if (self.inlet == 4):
+            if (self.left.getState()):
+                self.c.itemconfig(self.f4, fill=self.fluidColor)
+                inlet = True
+            else:
+                self.c.itemconfig(self.f4, fill='black')
+
         if(open):
             self.state = True
             self.c.itemconfig(self.fill, fill='#41d94d')
+            if (self.outlet == 1):
+                if(inlet):
+                    self.c.itemconfig(self.f1, fill=self.fluidColor)
+                else:
+                    self.c.itemconfig(self.f1, fill='black')
+            if (self.outlet == 2):
+                if (inlet):
+                    self.c.itemconfig(self.f2, fill=self.fluidColor)
+                else:
+                    self.c.itemconfig(self.f2, fill='black')
+            if (self.outlet == 3):
+                if (inlet):
+                    self.c.itemconfig(self.f3, fill=self.fluidColor)
+                else:
+                    self.c.itemconfig(self.f3, fill='black')
+            if (self.outlet == 4):
+                if (inlet):
+                    self.c.itemconfig(self.f3, fill=self.fluidColor)
+                else:
+                    self.c.itemconfig(self.f3, fill='black')
         else:
             self.state = False
             self.c.itemconfig(self.fill, fill = '#ab1f1f')
+            if (self.outlet == 1):
+                self.c.itemconfig(self.f1, fill='black')
+            if (self.outlet == 2):
+                self.c.itemconfig(self.f2, fill='black')
+            if (self.outlet == 3):
+                self.c.itemconfig(self.f3, fill='black')
+            if (self.outlet == 4):
+                self.c.itemconfig(self.f4, fill='black')
+
+
+
 
     def setPipes(self, fill_1, fill_2, fill_3, fill_4):
         if (fill_1):
