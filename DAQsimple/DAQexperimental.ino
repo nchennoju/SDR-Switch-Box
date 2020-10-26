@@ -14,11 +14,8 @@ void setup() {
 // Code Start
 void loop() {
 
-  // Read Pot Value
-  int val = analogRead(potPin);
-  
-  // Display Voltage in serial monitor
-  Serial.println(val);
+  // Read Pot Value and Display as Voltage in serial monitor
+  Serial.println(map(analogRead(potPin),0,1023,0,5));
 
   // Delay for stability
   delay(1);
