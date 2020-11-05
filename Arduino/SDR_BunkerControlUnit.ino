@@ -9,7 +9,9 @@
  * Author: Nitish Chennoju
 */
 
+#include <SoftwareSerial.h>
 
+SoftwareSerial ser(2, 3); // RX, TX
 const int relayPins[] = {12, 11, 10, 9, 8, 7};
 
 char in;
@@ -21,6 +23,9 @@ void setup() {
   //Initialize Serial Monitor
   Serial.begin(115200);
   Serial.println("BEGIN");  //Sample MSG
+
+  //Initialize Serial Communication between boards
+  ser.begin(115200);
 
   //Declare relay pins as OUTPUTS
   for (int i = 0; i < sizeof(relayPins); i++) {
@@ -74,6 +79,9 @@ void loop() {
     Serial.print(int(msg[1])-48);
     Serial.print(F(" pos to "));
     Serial.println(int(msg[2]));
+
+    //Serial write data via ser software serial
+    ser.println(msg);
   }
   
 }
